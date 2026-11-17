@@ -1,0 +1,48 @@
+import type { Suspect } from '../../engine/types';
+
+export const suspects: Suspect[] = [
+  {
+    id: 'ines',
+    name: 'Inès Morel',
+    initials: 'IM',
+    age: 31,
+    role: 'Cheffe de projet',
+    bio: 'Amie de Léa depuis le lycée. Elle a organisé la cagnotte et rangé l’enveloppe. Précise, organisée, un brin directive.',
+    hue: 200,
+    shape: 'circle',
+    conversationId: 'conv_ines',
+  },
+  {
+    id: 'hugo',
+    name: 'Hugo Bernard',
+    initials: 'HB',
+    age: 29,
+    role: 'Graphiste indépendant',
+    bio: 'Le comique de la bande. Toujours une blague d’avance, rarement à l’heure. Ami de Yanis depuis l’apprentissage.',
+    hue: 140,
+    shape: 'square',
+    conversationId: 'conv_hugo',
+  },
+  {
+    id: 'clara',
+    name: 'Clara Nguyen',
+    initials: 'CN',
+    age: 27,
+    role: 'Étudiante en pharmacie',
+    bio: 'Ancienne colocataire de Léa. Discrète, méticuleuse, facilement inquiète. Elle a passé l’après-midi sur la décoration.',
+    hue: 330,
+    shape: 'hexagon',
+    conversationId: 'conv_clara',
+  },
+  {
+    id: 'yanis',
+    name: 'Yanis Haddad',
+    initials: 'YH',
+    age: 30,
+    role: 'Commercial',
+    bio: 'Sûr de lui, avare de mots. Il connaît Léa par Hugo et ne rate jamais une soirée.',
+    hue: 28,
+    shape: 'diamond',
+    conversationId: 'conv_yanis',
+  },
+];
