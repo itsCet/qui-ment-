@@ -98,7 +98,10 @@ export function isValidProgress(v: unknown): v is CaseProgress {
  * sont ignorées (statut `invalid`) sans faire planter l'application.
  * `knownCaseIds` permet d'écarter les enquêtes qui n'existent plus.
  */
-export function loadSave(storage: KeyValueStorage | null, knownCaseIds: string[]): { save: SaveFile; status: LoadStatus } {
+export function loadSave(
+  storage: KeyValueStorage | null,
+  knownCaseIds: string[],
+): { save: SaveFile; status: LoadStatus; pruned?: boolean } {
   if (!storage) return { save: emptySave(), status: 'unavailable' };
   let raw: string | null;
   try {
@@ -119,8 +122,11 @@ export function loadSave(storage: KeyValueStorage | null, knownCaseIds: string[]
 
   const progress: Record<string, CaseProgress> = {};
   let dropped = false;
+  // Une enquête retirée du jeu n'est pas une sauvegarde endommagée : on l'efface sans alerte.
+  let pruned = false;
   for (const [caseId, p] of Object.entries(migrated.progress)) {
-    if (knownCaseIds.includes(caseId) && isValidProgress(p) && p.caseId === caseId) progress[caseId] = p;
+    if (!knownCaseIds.includes(caseId)) pruned = true;
+    else if (isValidProgress(p) && p.caseId === caseId) progress[caseId] = p;
     else dropped = true;
   }
   const activeCaseId =
@@ -133,6 +139,7 @@ export function loadSave(storage: KeyValueStorage | null, knownCaseIds: string[]
   return {
     save: { version: SAVE_VERSION, activeCaseId, progress, settings },
     status: dropped ? 'invalid' : 'restored',
+    pruned,
   };
 }
 

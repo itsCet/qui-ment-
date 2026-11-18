@@ -28,7 +28,30 @@ describe('sauvegarde', () => {
     expect(loadSave(memoryStorage({ [SAVE_KEY]: '42' }), ids).save).toEqual(emptySave());
   });
 
-  it('écarte une progression invalide ou une enquête inconnue sans tout perdre', () => {
+  it('efface sans alerte la sauvegarde d’une enquête retirée du jeu', () => {
+    const good = createProgress(c);
+    const raw = {
+      version: SAVE_VERSION,
+      activeCaseId: 'enquete-retiree',
+      progress: { [c.id]: good, 'enquete-retiree': { ...good, caseId: 'enquete-retiree' } },
+      settings: { instantMessages: true },
+    };
+    const storage = memoryStorage({ [SAVE_KEY]: JSON.stringify(raw) });
+    const { save, status, pruned } = loadSave(storage, ids);
+    expect(status).toBe('restored');
+    expect(pruned).toBe(true);
+    expect(Object.keys(save.progress)).toEqual([c.id]);
+    expect(save.activeCaseId).toBeNull();
+
+    // Le store réécrit la sauvegarde nettoyée : plus aucune trace de l'enquête retirée.
+    const store = createGameStore(storage);
+    store.getState().hydrate();
+    expect(store.getState().loadStatus).toBe('restored');
+    expect(storage.data[SAVE_KEY]).not.toContain('enquete-retiree');
+    expect(JSON.parse(storage.data[SAVE_KEY]).progress[c.id]).toEqual(good);
+  });
+
+  it('écarte une progression invalide sans tout perdre', () => {
     const good = createProgress(c);
     const raw = {
       version: SAVE_VERSION,
@@ -37,7 +60,7 @@ describe('sauvegarde', () => {
       settings: { instantMessages: 'oui' },
     };
     const { save, status } = loadSave(memoryStorage({ [SAVE_KEY]: JSON.stringify(raw) }), ids);
-    expect(status).toBe('invalid');
+    expect(status).toBe('restored');
     expect(Object.keys(save.progress)).toEqual([c.id]);
     expect(save.activeCaseId).toBeNull();
     expect(save.settings.instantMessages).toBe(false);

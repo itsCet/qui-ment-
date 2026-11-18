@@ -76,13 +76,13 @@ export function createGameStore(storage: KeyValueStorage | null) {
 
       hydrate() {
         if (get().hydrated) return;
-        const { save, status } = loadSave(
+        const { save, status, pruned } = loadSave(
           storage,
           cases.map((c) => c.id),
         );
         set({ save, loadStatus: status, hydrated: true });
         // Réécrit une sauvegarde nettoyée si des données invalides ont été écartées.
-        if (status === 'invalid') writeSave(storage, save);
+        if (status === 'invalid' || pruned) writeSave(storage, save);
       },
 
       startCase(caseId) {
