@@ -3,7 +3,7 @@
 Jeu d’enquête narratif en français, présenté comme un téléphone fictif. Le joueur lit des
 conversations, interroge des suspects, collecte des preuves et démontre qui ment.
 
-Deux enquêtes, choisies depuis l’écran verrouillé, avec des sauvegardes séparées :
+Trois enquêtes, choisies depuis l’écran verrouillé, avec des sauvegardes séparées :
 
 1. **« Le cadeau disparu »** (5 à 10 minutes). Une enveloppe de 500 CHF destinée à
    l’anniversaire de Léa disparaît d’un appartement lausannois ; quatre amis sont suspects.
@@ -14,6 +14,11 @@ Deux enquêtes, choisies depuis l’écran verrouillé, avec des sauvegardes sé
    aux secours. Il faut démontrer qui a envoyé le message, comprendre pourquoi cette
    personne ment, et guider les secours vers le bon endroit. La conversation avec les
    secours est entièrement fictive : aucun appel ni service réel n’est contacté.
+3. **« Après la séance »** (15 à 20 minutes). Lucas Morel, projectionniste du Rialto,
+   est retrouvé mort dans la cabine. Son dernier message, à 22:05, dit qu’il a pris le
+   dernier bus. Avec ta collègue Inès, tu lis l’extraction de son téléphone et tu
+   auditionnes trois personnes. Il faut établir que ce message était programmé, qui
+   cache une partie de sa présence, et ce qui a quitté la cabine.
 
 Application web mobile installable (PWA), en portrait, jouable à une main, hors ligne après
 le premier chargement. Aucun backend, aucun compte.
@@ -96,6 +101,7 @@ docs/
   format-enquetes.md               format pour ajouter une enquête
   conception/le-cadeau-disparu.md  document interne du niveau 1 : vérité, chronologie, solution
   conception/le-dernier-signal.md  document interne du niveau 2 : vérité, chronologie, savoirs, déblocages
+  conception/apres-la-seance.md    document interne du niveau 3 : chronologie, origine des pièces, déductions
 public/          icônes PWA (générées par scripts/generate-icons.cjs)
 ```
 
@@ -133,6 +139,13 @@ Sur un écran large, le téléphone est affiché dans un cadre ; sur mobile, il 
 l’écran.
 
 ## Photos
+
+Niveau 3 : les photos (`public/photos/rialto/*.webp`) ont été fournies par le
+commanditaire du projet et intégrées localement (WebP 1200×900, portraits 256×256) :
+`facade`, `lucas-cabine`, `disque-rouge`, `miroir-intact`, `miroir-casse`, `sac-nina`,
+`portrait-adrien`, `portrait-salome`, `portrait-nina`. Pour en remplacer une, garder le
+même nom de fichier. Le téléphone de Lucas n’a pas de photo : la pièce est décrite en
+texte. Chaque indice essentiel existe aussi en texte (« Examiner »).
 
 Niveau 2 : les photos (`public/photos/signal/*.webp`) ont été fournies par le
 commanditaire du projet et intégrées localement (redimensionnées en WebP).

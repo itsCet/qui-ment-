@@ -617,7 +617,7 @@ export const conversations: Conversation[] = [
         {
           id: 'nn_e1',
           from: 'nina',
-          text: 'Mes affaires. Mon sac, mon ordinateur. Rien qui soit à Lucas.',
+          text: 'Mes affaires. Mon sac, mes câbles, mon carnet. Rien qui soit à Lucas.',
           effects: [statement('st_nina_affaires')],
         },
       ]),

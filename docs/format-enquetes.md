@@ -55,6 +55,16 @@ sauvegarde. Renommer un identifiant publié casse les parties en cours. Conventi
 | `Solution.prompt` | Question de l’écran d’accusation (« Qui a envoyé le faux message ? »). |
 | `Solution.resolvedWhen` + `Solution.afterAccusation` | L’enquête continue après l’accusation (aveux, secours) jusqu’à cette condition ; l’écran d’accusation renvoie vers la conversation indiquée. |
 
+## Champs optionnels (niveau 3)
+
+| Champ | Effet |
+|---|---|
+| `Suspect.avatar` | Photo locale du contact (sinon avatar à initiales). |
+| `Suspect.items` | Pièces affichées dans la fiche du contact, section « Effets présentés ». |
+| `Conversation.section: 'enquete'` | Conversation rangée dans l’appli Enquête (auditions, collègue) plutôt que dans Échanges. |
+| `Solution.noAccusation` | Pas d’écran d’accusation : l’affaire se résout par `resolvedWhen` (obligatoire avec ce champ). |
+| `Solution.verdictLabel` | Mot affiché sous le portrait à la résolution (« Responsable »). |
+
 ## Conditions (`Condition`)
 
 ```ts

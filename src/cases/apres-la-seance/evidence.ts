@@ -80,7 +80,7 @@ export const evidence: Evidence[] = [
     title: 'Le couloir à 21:05',
     summary: 'Photo envoyée à Adrien : le miroir près de la cabine est intact',
     description:
-      'Photo envoyée par Lucas à Adrien, qui l’attendait dans le hall, avec le message « La cabine, au fond du couloir. » Au fond, la porte de la cabine ; juste à côté, un petit miroir rond accroché au mur, intact, au-dessus d’une tablette vide.',
+      'Photo envoyée par Lucas à Adrien, qui l’attendait dans le hall, avec le message « La cabine, au fond du couloir. » Au fond, la porte de la cabine ; juste à côté, un miroir rectangulaire à cadre en bois accroché au mur, intact, au-dessus d’une tablette vide.',
     source: `${EXTRACTION} — photo envoyée par Lucas à Adrien.`,
     date: 'mar. 3 mars',
     time: '21:05',
@@ -176,13 +176,13 @@ export const evidence: Evidence[] = [
   {
     id: 'ev_sac_nina',
     title: 'Sac de Nina',
-    summary: 'Ordinateur, câbles, carnet, un disque dur rouge',
+    summary: 'Trousse, câble, carnet, clés, un disque dur rouge',
     description:
-      'Sac de travail présenté par Nina, ouvert : un ordinateur portable, des câbles, un carnet, une gourde, et un disque dur dans une coque rouge avec une étiquette blanche « MASTER ». Des effets ordinaires pour une monteuse.',
+      'Sac en toile présenté par Nina, ouvert : une trousse noire, un câble USB, ses clés personnelles, un carnet, et posé dessus un disque dur dans une coque rouge avec une étiquette blanche « MASTER ». Des effets ordinaires pour une monteuse.',
     source: 'Relevé de l’équipe au début des auditions.',
     date: 'mer. 4 mars',
     image: `${IMG}/sac-nina.webp`,
-    content: { type: 'photo', visual: 'none', caption: 'Sac de Nina : ordinateur, câbles, carnet, disque rouge « MASTER »' },
+    content: { type: 'photo', visual: 'none', caption: 'Sac de Nina : trousse, câble, clés, carnet, disque rouge « MASTER »' },
   },
 
   /* -------- Pièces apportées par l'enquête -------- */
@@ -195,8 +195,7 @@ export const evidence: Evidence[] = [
     source: 'Constatations, envoyées par Inès.',
     date: 'mar. 3 mars',
     time: '23:40',
-    image: `${IMG}/telephone-jaune.webp`,
-    content: { type: 'photo', visual: 'none', caption: 'Téléphone jaune à bande noire, sous un fauteuil du rang F' },
+    content: { type: 'object', icon: 'clip', note: 'Téléphone jaune à bande noire, retrouvé écran vers le sol sous un fauteuil du rang F.' },
   },
   {
     id: 'ev_comparaison',
@@ -264,12 +263,12 @@ export const evidence: Evidence[] = [
     title: 'Le miroir, constatation',
     summary: 'Le même miroir, brisé ; des fragments au sol',
     description:
-      'Photo de constatation : le miroir près de la porte de la cabine est brisé, des fragments sont au sol sous la tablette. Sur la tablette, un trousseau de clés du Rialto.',
+      'Photo de constatation : le miroir près de la porte de la cabine est brisé ; des fragments sont sur la tablette et au sol. Sur cette tablette, l’équipe a relevé un trousseau de clés du Rialto, placé sous scellé avant la photo.',
     source: 'Constatations de la cabine, envoyées par Inès.',
     date: 'mar. 3 mars',
     time: '23:50',
     image: `${IMG}/miroir-casse.webp`,
-    content: { type: 'photo', visual: 'none', caption: 'Constatation : miroir brisé, fragments au sol, clés sur la tablette' },
+    content: { type: 'photo', visual: 'none', caption: 'Constatation : miroir brisé, fragments sur la tablette et au sol' },
   },
   {
     id: 'ev_inventaire',
