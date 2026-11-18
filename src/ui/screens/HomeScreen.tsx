@@ -1,6 +1,7 @@
 import { Link } from 'react-router';
 import { getCurrentObjective, isResolved, unreadCount, type DeviceApp } from '../../engine';
 import { useCaseRoute } from '../hooks';
+import { deName } from '../evidenceMeta';
 import { AppIcon, type AppIconId } from '../phone/AppIcon';
 
 interface HomeApp {
@@ -75,7 +76,7 @@ export function HomeScreen() {
       {device.copy && (
         <div className="widget widget-copy">
           <span className="widget-label">Copie en lecture seule</span>
-          <span className="widget-objective-title">Téléphone de {device.copy.ownerName}</span>
+          <span className="widget-objective-title">Téléphone {deName(device.copy.ownerName)}</span>
           <span className="widget-copy-sync">Dernière synchronisation : {device.copy.syncedAt}</span>
         </div>
       )}

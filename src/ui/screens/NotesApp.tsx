@@ -5,7 +5,7 @@ import { useGame } from '../../state/store';
 import { Dialog } from '../components/Dialog';
 import { EvidenceDetail } from '../components/EvidenceView';
 import { Icon } from '../components/Icon';
-import { evidenceIcon, evidenceWhen } from '../evidenceMeta';
+import { deName, evidenceIcon, evidenceWhen } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
 import { NavBar } from '../phone/NavBar';
 
@@ -144,7 +144,7 @@ export function NotesApp() {
       )}
       {c.device.copy && (
         <h2 className="list-section-title">
-          Notes de {c.device.copy.ownerName} · copie du {c.device.copy.syncedAt}
+          Notes {deName(c.device.copy.ownerName)} · copie du {c.device.copy.syncedAt}
         </h2>
       )}
       <ul className="grouped-list notes-list">
@@ -181,7 +181,7 @@ export function NoteDetail() {
       <article className="note">
         <p className="note-date">
           {evidenceWhen(note)}
-          {c.device.copy ? ` · copie du téléphone de ${c.device.copy.ownerName}` : ''}
+          {c.device.copy ? ` · copie du téléphone ${deName(c.device.copy.ownerName)}` : ''}
         </p>
         <h1 className="note-title">{note.title.replace(/^Note « (.*) »$/, '$1')}</h1>
         <div className="note-body">

@@ -61,3 +61,8 @@ export function evidenceSortKey(e: Evidence): number {
   const [h, m] = (e.time ?? '00:00').split(':').map(Number);
   return ((month * 32 + day) * 24 + (h || 0)) * 60 + (m || 0);
 }
+
+/** « de Sam », « d’Élias » : élision devant une voyelle ou un h muet. */
+export function deName(name: string): string {
+  return /^[aeiouyhàâäéèêëîïôöûüœ]/i.test(name) ? `d’${name}` : `de ${name}`;
+}
