@@ -40,6 +40,21 @@ sauvegarde. Renommer un identifiant publié casse les parties en cours. Conventi
 | `Objective` | Objectif courant (`completeWhen`) et ses **trois** indices progressifs. |
 | `Solution` | Coupable, exigences de preuves (`requirements`, chacune `anyOf`), nombre maximal de preuves, retour pour chaque mauvais suspect, résolution (chronologie, preuves décisives, fausses pistes, épilogue). |
 
+## Champs optionnels (niveau 2)
+
+| Champ | Effet |
+|---|---|
+| `Case.initialEvidence` | Pièces présentes dès le départ (par exemple le contenu d’une copie de téléphone). |
+| `Case.device` | Habillage du téléphone : date, météo, événement, applis de journal (`apps`, icônes `lock`, `wifi`, `cloud`), et `copy` (propriétaire et date de synchronisation d’une copie). L’appli Fichiers apparaît dès qu’une pièce est un `document`. |
+| `Conversation.archive` | Conversation de la copie, en lecture seule : les messages de `ownerId` s’affichent comme envoyés par le propriétaire. Pas de choix. |
+| `Message.date` | Jour affiché avec l’heure (« lun. 16 nov. »), pour l’historique d’autres jours. |
+| `Evidence.date`, `Evidence.image`, `Evidence.everyday` | Date affichée, photo locale, et photo du quotidien (visible dans Photos mais pas dans le carnet ni l’accusation). |
+| `EvidenceContent` `document` et `note` | Document à sections (rapport, bon, fiche…) et note avec cases cochées ou non. |
+| `Suspect.npc` | Personnage secondaire (secours) : absent des contacts et de l’accusation. |
+| `Choice.mistake` + `ScoringRules.mistake` | Mauvaise réponse comptée au score, avec retour explicatif. |
+| `Solution.prompt` | Question de l’écran d’accusation (« Qui a envoyé le faux message ? »). |
+| `Solution.resolvedWhen` + `Solution.afterAccusation` | L’enquête continue après l’accusation (aveux, secours) jusqu’à cette condition ; l’écran d’accusation renvoie vers la conversation indiquée. |
+
 ## Conditions (`Condition`)
 
 ```ts
@@ -63,6 +78,7 @@ sauvegarde. Renommer un identifiant publié casse les parties en cours. Conventi
 { type: 'addStatement', statementId: 'st_…' }
 { type: 'setFlag', flag: '…', value?: boolean }
 { type: 'openConversation', conversationId: 'conv_…' }
+{ type: 'setClock', time: '09:24' }                // avance l’horloge narrative (jamais en arrière)
 ```
 
 Les effets sont portés par les messages (appliqués à leur révélation), les choix et les

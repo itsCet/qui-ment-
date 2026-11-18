@@ -968,6 +968,12 @@ button {
   color: var(--text-2);
 }
 
+.list-row-title,
+.list-row-sub {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .list-row-kicker {
   font-size: 0.75rem;
   font-weight: 600;
@@ -2371,6 +2377,166 @@ button {
 
 .switch:checked::after {
   transform: translateX(20px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Niveau 2 : copie, archives, documents                                       */
+/* -------------------------------------------------------------------------- */
+
+.widget-copy {
+  min-height: 0;
+  gap: 2px;
+  background: rgba(20, 24, 40, 0.55);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  color: #fff;
+}
+
+.widget-copy .widget-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.widget-copy-sync {
+  font-size: 0.8125rem;
+  opacity: 0.85;
+}
+
+.list-section-title {
+  margin: 18px var(--pad-r) 6px calc(var(--pad) + 4px);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-2);
+}
+
+.notes-page .grouped-list {
+  margin: 0 var(--pad-r) 0 var(--pad);
+  background: #fff;
+  border: 1px solid #efe7d2;
+}
+
+.row-me {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.sender-me {
+  margin: 6px 12px 0 0;
+}
+
+.row-me .bubble-photo,
+.row-me .bubble-file {
+  margin-top: 2px;
+}
+
+.file-icon {
+  color: var(--blue);
+}
+
+.ev-when {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.ev-document {
+  padding: 18px 16px;
+  border: 1px solid var(--sep);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  display: grid;
+  gap: 8px;
+}
+
+.ev-document-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ev-document-format {
+  font-weight: 700;
+  color: var(--red);
+}
+
+.ev-document h3 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.ev-document-meta {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+
+.ev-document dl {
+  margin: 4px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.ev-document dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-2);
+}
+
+.ev-document dd {
+  margin: 2px 0 0;
+}
+
+.ev-document-footer {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--sep);
+  font-style: italic;
+  color: var(--text-2);
+}
+
+.ev-note-card {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fffdf3;
+  border: 1px solid #efe7d2;
+  display: grid;
+  gap: 6px;
+}
+
+.ev-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ev-log-list li {
+  display: grid;
+  gap: 1px;
+  padding: 9px 2px;
+  border-top: 1px solid var(--sep);
+  font-variant-numeric: tabular-nums;
+}
+
+.ev-log-head strong {
+  font-weight: 700;
+}
+
+.ev-log-origin {
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+
+h2.photos-date {
+  margin: 10px 0 0;
+  padding: 6px var(--pad-r) 8px var(--pad);
+  font-size: 1rem;
 }
 
 /* -------------------------------------------------------------------------- */

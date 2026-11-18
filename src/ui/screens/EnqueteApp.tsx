@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { computeScore, getCurrentObjective, hintCostUpTo, isObjectiveComplete } from '../../engine';
+import { computeScore, getCurrentObjective, hintCostUpTo, isObjectiveComplete, isResolved } from '../../engine';
 import { useGame } from '../../state/store';
 import { Icon } from '../components/Icon';
 import { useCaseRoute } from '../hooks';
@@ -22,7 +22,7 @@ export function EnqueteApp() {
       <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Enquête" />
 
       <section className="group-section">
-        <h2 className="section-label">{objective ? 'Objectif actuel' : 'Affaire résolue'}</h2>
+        <h2 className="section-label">{objective ? 'Objectif actuel' : isResolved(c, progress) ? 'Affaire résolue' : 'Enquête'}</h2>
         <div className="group-card objective-card">
           {objective ? (
             <>
@@ -89,7 +89,8 @@ export function EnqueteApp() {
           })}
           <li className="list-row static">
             <span className="list-row-text">
-              Pièces : {progress.evidence.length}/{c.evidence.length} · Mensonges : {progress.contradictions.length}/
+              Pièces : {progress.evidence.filter((id) => !c.evidence.find((e) => e.id === id)?.everyday).length}/
+              {c.evidence.filter((e) => !e.everyday).length} · Mensonges : {progress.contradictions.length}/
               {c.contradictions.length}
             </span>
           </li>
@@ -99,7 +100,7 @@ export function EnqueteApp() {
       {!progress.solved && (
         <section className="group-section">
           <Link to={`${base}/accusation`} className="button-wide button-danger">
-            Accuser quelqu’un
+            {c.solution.prompt ?? 'Accuser quelqu’un'}
           </Link>
           <p className="section-foot">
             {progress.accusations.length === 0

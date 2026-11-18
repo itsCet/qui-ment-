@@ -1,6 +1,16 @@
 /** Icônes d'applis du téléphone fictif (dessins originaux, aucune marque). */
 
-export type AppIconId = 'echanges' | 'photos' | 'notes' | 'contacts' | 'serrure' | 'box' | 'carnet' | 'enquete';
+export type AppIconId =
+  | 'echanges'
+  | 'photos'
+  | 'notes'
+  | 'contacts'
+  | 'serrure'
+  | 'box'
+  | 'carnet'
+  | 'enquete'
+  | 'fichiers'
+  | 'sauvegarde';
 
 function Tile({ id, from, to, children }: { id: string; from: string; to: string; children: React.ReactNode }) {
   const gid = `g-${id}`;
@@ -74,6 +84,21 @@ export function AppIcon({ id }: { id: AppIconId }) {
           <rect x="16" y="12" width="28" height="36" rx="3" fill="#f7efe1" />
           <path d="M21 22h18M21 28h18M21 34h12" stroke="#b9a587" strokeWidth="1.8" strokeLinecap="round" />
           <path d="M38 8v16l-3-2.5-3 2.5V8" fill="#d6453a" />
+        </Tile>
+      );
+    case 'fichiers':
+      return (
+        <svg viewBox="0 0 60 60" className="app-icon-svg" aria-hidden="true" focusable="false">
+          <rect width="60" height="60" rx="13.5" fill="#fff" />
+          <path d="M10 19a4 4 0 0 1 4-4h10l4 4h18a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="#3c8ef5" />
+          <path d="M10 24h40v17a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="#65aaff" />
+        </svg>
+      );
+    case 'sauvegarde':
+      return (
+        <Tile id={id} from="#8fd3ff" to="#2f8bef">
+          <path d="M20 41a8 8 0 0 1-.6-16 11 11 0 0 1 21.2-2.4A9 9 0 1 1 41 41z" fill="#fff" />
+          <path d="M30 37V27m-4.5 4.5L30 27l4.5 4.5" fill="none" stroke="#2f8bef" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </Tile>
       );
     case 'enquete':

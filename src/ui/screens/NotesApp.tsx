@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
+import { Link, Navigate, useParams } from 'react-router';
 import { getAvailableChoices, getNextMessage, indexCase, type Evidence } from '../../engine';
 import { useGame } from '../../state/store';
 import { Dialog } from '../components/Dialog';
 import { EvidenceDetail } from '../components/EvidenceView';
 import { Icon } from '../components/Icon';
-import { evidenceIcon } from '../evidenceMeta';
+import { evidenceIcon, evidenceWhen } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
 import { NavBar } from '../phone/NavBar';
 
 /** La conversation « notes » de l'enquête, présentée comme une note avec cases à cocher. */
-export function NotesApp() {
+function ConversationNote({ back }: { back: { to: string; label: string } }) {
   const { c, progress } = useCaseRoute();
   const choose = useGame((s) => s.choose);
   const markSeen = useGame((s) => s.markSeen);
@@ -21,7 +22,6 @@ export function NotesApp() {
   }, [c, notes, progress, markSeen]);
 
   if (!c || !progress) return null;
-  const base = `/enquete/${c.id}`;
   const open = notes && progress.openConversations.includes(notes.id);
   const index = indexCase(c);
   const thread = notes ? (progress.threads[notes.id] ?? []) : [];
@@ -31,7 +31,7 @@ export function NotesApp() {
 
   return (
     <div className="app-page notes-page">
-      <NavBar back={{ to: base, label: 'Accueil' }} tint="yellow" />
+      <NavBar back={back} tint="yellow" />
       {!open || !notes ? (
         <p className="empty">Aucune note.</p>
       ) : (
@@ -97,6 +97,111 @@ export function NotesApp() {
       <Dialog open={!!openEvidence} onClose={() => setOpenEvidence(null)} title={openEvidence?.title ?? ''} variant="sheet">
         {openEvidence && <EvidenceDetail c={c} evidence={openEvidence} />}
       </Dialog>
+    </div>
+  );
+}
+
+/** Les notes d'Élias présentes dans la copie (pièces de type « note »). */
+function useNoteEvidence(): Evidence[] {
+  const { c, progress } = useCaseRoute();
+  if (!c || !progress) return [];
+  return c.evidence.filter((e) => e.content.type === 'note' && progress.evidence.includes(e.id));
+}
+
+export function NotesApp() {
+  const { c, progress } = useCaseRoute();
+  const owned = useNoteEvidence();
+  if (!c || !progress) return null;
+  const base = `/enquete/${c.id}`;
+  const notes = c.conversations.find((cv) => cv.kind === 'notes');
+  // Une seule note (premier niveau) : on l'ouvre directement.
+  if (!c.evidence.some((e) => e.content.type === 'note')) {
+    return <ConversationNote back={{ to: base, label: 'Accueil' }} />;
+  }
+  const journal = notes ? progress.threads[notes.id] ?? [] : [];
+  const lastText = (() => {
+    const last = [...journal].reverse().find((e) => e.kind === 'message');
+    return last ? indexCase(c).messages.get(last.id)?.message.text : undefined;
+  })();
+
+  return (
+    <div className="app-page notes-page">
+      <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Notes" tint="yellow" />
+      {notes && progress.openConversations.includes(notes.id) && (
+        <>
+          <h2 className="list-section-title">Tes notes ({c.playerName})</h2>
+          <ul className="grouped-list notes-list">
+            <li>
+              <Link to={`${base}/notes/journal`} className="list-row">
+                <span className="list-row-text">
+                  <span className="list-row-title">{notes.title.replace(/^Notes · /, '')}</span>
+                  <span className="list-row-sub">{lastText}</span>
+                </span>
+              </Link>
+            </li>
+          </ul>
+        </>
+      )}
+      {c.device.copy && (
+        <h2 className="list-section-title">
+          Notes de {c.device.copy.ownerName} · copie du {c.device.copy.syncedAt}
+        </h2>
+      )}
+      <ul className="grouped-list notes-list">
+        {owned.map((e) => (
+          <li key={e.id}>
+            <Link to={`${base}/notes/${e.id}`} className="list-row">
+              <span className="list-row-text">
+                <span className="list-row-title">{e.title.replace(/^Note « (.*) »$/, '$1')}</span>
+                <span className="list-row-sub">
+                  {evidenceWhen(e)}
+                  {e.content.type === 'note' && e.content.lines[0] ? ` — ${e.content.lines[0].text}` : ''}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export function NoteDetail() {
+  const { c, progress } = useCaseRoute();
+  const { noteId = '' } = useParams();
+  const owned = useNoteEvidence();
+  if (!c || !progress) return null;
+  const base = `/enquete/${c.id}`;
+  if (noteId === 'journal') return <ConversationNote back={{ to: `${base}/notes`, label: 'Notes' }} />;
+  const note = owned.find((e) => e.id === noteId);
+  if (!note || note.content.type !== 'note') return <Navigate to={`${base}/notes`} replace />;
+  return (
+    <div className="app-page notes-page">
+      <NavBar back={{ to: `${base}/notes`, label: 'Notes' }} tint="yellow" />
+      <article className="note">
+        <p className="note-date">
+          {evidenceWhen(note)}
+          {c.device.copy ? ` · copie du téléphone de ${c.device.copy.ownerName}` : ''}
+        </p>
+        <h1 className="note-title">{note.title.replace(/^Note « (.*) »$/, '$1')}</h1>
+        <div className="note-body">
+          {note.content.lines.map((line, i) =>
+            line.check ? (
+              <p key={i} className={`note-check${line.check === 'done' ? ' done' : ''}`}>
+                <span className="note-box" aria-hidden="true">
+                  {line.check === 'done' && <Icon name="check" size={16} />}
+                </span>
+                <span>
+                  <span className="visually-hidden">{line.check === 'done' ? 'Fait : ' : 'Pas fait : '}</span>
+                  {line.text}
+                </span>
+              </p>
+            ) : (
+              <p key={i}>{line.text}</p>
+            ),
+          )}
+        </div>
+      </article>
     </div>
   );
 }

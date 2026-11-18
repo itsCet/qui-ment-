@@ -1,16 +1,19 @@
 import { Link, Navigate, useParams } from 'react-router';
 import type { Evidence } from '../../engine';
 import { EvidenceDetail } from '../components/EvidenceView';
+import { evidenceSortKey, evidenceWhen } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
 import { NavBar } from '../phone/NavBar';
 
 function usePhotos(): Evidence[] {
   const { c, progress } = useCaseRoute();
   if (!c || !progress) return [];
-  return progress.evidence
-    .map((id) => c.evidence.find((e) => e.id === id))
-    .filter((e): e is Evidence => !!e?.image)
-    .sort((a, b) => (a.time ?? '99').localeCompare(b.time ?? '99'));
+  const owned = c.evidence.filter((e) => e.image && progress.evidence.includes(e.id));
+  // Sans date explicite (premier niveau), on garde l'ordre chronologique des heures.
+  // Avec des dates : les plus récentes d'abord, comme sur un téléphone. Sinon : ordre des heures.
+  return owned.some((e) => e.date)
+    ? owned.sort((a, b) => evidenceSortKey(b) - evidenceSortKey(a))
+    : owned.sort((a, b) => (a.time ?? '99').localeCompare(b.time ?? '99'));
 }
 
 export function PhotosApp() {
@@ -18,25 +21,32 @@ export function PhotosApp() {
   const photos = usePhotos();
   if (!c) return null;
   const base = `/enquete/${c.id}`;
+  const fallback = `${c.device.date.weekday} ${c.device.date.day} ${c.device.date.month}`;
+  const groups: { date: string; items: Evidence[] }[] = [];
+  for (const p of photos) {
+    const date = p.date ?? fallback;
+    const group = groups.find((g) => g.date === date);
+    if (group) group.items.push(p);
+    else groups.push({ date, items: [p] });
+  }
   return (
     <div className="app-page">
       <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Photos" />
-      <p className="photos-date">
-        {c.device.date.weekday} {c.device.date.day} {c.device.date.month}
-      </p>
-      {photos.length === 0 ? (
-        <p className="empty">Aucune photo pour l’instant.</p>
-      ) : (
-        <ul className="photo-grid">
-          {photos.map((p) => (
-            <li key={p.id}>
-              <Link to={`${base}/photos/${p.id}`} className="photo-cell" aria-label={p.title}>
-                <img src={p.image} alt="" loading="lazy" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {photos.length === 0 && <p className="empty">Aucune photo pour l’instant.</p>}
+      {groups.map((group) => (
+        <section key={group.date} aria-label={group.date}>
+          <h2 className="photos-date">{group.date}</h2>
+          <ul className="photo-grid">
+            {group.items.map((p) => (
+              <li key={p.id}>
+                <Link to={`${base}/photos/${p.id}`} className="photo-cell" aria-label={`${p.title}, ${evidenceWhen(p)}`}>
+                  <img src={p.image} alt="" loading="lazy" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
       <p className="photos-count">
         {photos.length} photo{photos.length > 1 ? 's' : ''}
       </p>
@@ -63,11 +73,7 @@ export function PhotoViewer() {
         title={
           <span className="viewer-title">
             <strong>{photo.title}</strong>
-            {photo.time && (
-              <span>
-                {c.device.date.weekday} · {photo.time}
-              </span>
-            )}
+            <span>{evidenceWhen(photo) || `${c.device.date.weekday} ${c.device.date.day} ${c.device.date.month}`}</span>
           </span>
         }
       />

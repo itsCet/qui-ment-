@@ -10,12 +10,23 @@ export function MessagesApp() {
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
   const visible = c.conversations.filter((cv) => cv.kind !== 'notes' && progress.openConversations.includes(cv.id));
+  const live = visible.filter((cv) => !cv.archive);
+  const archives = visible.filter((cv) => cv.archive);
+  const sections = archives.length
+    ? [
+        { title: `Tes conversations (${c.playerName})`, items: live },
+        { title: `${archives[0].archive?.label} · ${c.device.copy?.syncedAt ?? ''}`, items: archives },
+      ]
+    : [{ title: '', items: live }];
 
   return (
     <div className="app-page">
       <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Échanges" />
+      {sections.map((section) => (
+      <section key={section.title} aria-label={section.title || 'Conversations'}>
+      {section.title && <h2 className="list-section-title">{section.title}</h2>}
       <ul className="msg-list">
-        {visible.map((cv) => {
+        {section.items.map((cv) => {
           const unread = unreadCount(progress, cv.id);
           const preview = lastEntryPreview(c, progress, cv);
           return (
@@ -43,6 +54,8 @@ export function MessagesApp() {
           );
         })}
       </ul>
+      </section>
+      ))}
       {visible.length === 0 && <p className="empty">Aucune conversation.</p>}
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { cases } from '../../cases';
-import { completionRatio, formatClock, parseClock, type Case } from '../../engine';
+import { completionRatio, formatClock, isResolved, parseClock, type Case } from '../../engine';
 import { useGame } from '../../state/store';
 import { ConfirmDialog, Dialog } from '../components/Dialog';
 import { AppIcon, StatusIcons } from '../phone/AppIcon';
@@ -15,11 +15,12 @@ function CaseNotification({ c, number }: { c: Case; number: number }) {
   const [confirmRestart, setConfirmRestart] = useState(false);
 
   const ratio = progress ? completionRatio(c, progress) : 0;
-  const status = !progress ? 'Nouvelle enquête' : progress.solved ? 'Affaire résolue' : `En cours · ${Math.round(ratio * 100)} %`;
+  const resolved = !!progress && isResolved(c, progress);
+  const status = !progress ? 'Nouvelle enquête' : resolved ? 'Affaire résolue' : `En cours · ${Math.round(ratio * 100)} %`;
 
   const open = () => {
     startCase(c.id);
-    navigate(progress?.solved ? `/enquete/${c.id}/resolution` : `/enquete/${c.id}`);
+    navigate(resolved ? `/enquete/${c.id}/resolution` : `/enquete/${c.id}`);
   };
 
   return (
@@ -35,7 +36,7 @@ function CaseNotification({ c, number }: { c: Case; number: number }) {
       <p>{c.tagline}</p>
       <p className="lock-card-status">
         {status}
-        {progress && !progress.solved && (
+        {progress && !resolved && (
           <span
             className="lock-progress"
             role="progressbar"
@@ -50,7 +51,7 @@ function CaseNotification({ c, number }: { c: Case; number: number }) {
       </p>
       <div className="lock-card-actions">
         <button type="button" className="pill pill-primary" onClick={open} disabled={!hydrated}>
-          {!progress ? 'Commencer' : progress.solved ? 'Revoir la résolution' : 'Reprendre'}
+          {!progress ? 'Commencer' : resolved ? 'Revoir la résolution' : 'Reprendre'}
         </button>
         {progress && (
           <button type="button" className="pill" onClick={() => setConfirmRestart(true)}>
@@ -79,10 +80,11 @@ export function LockScreen() {
   const instant = useGame((s) => s.save.settings.instantMessages);
   const setInstant = useGame((s) => s.setInstantMessages);
   const loadStatus = useGame((s) => s.loadStatus);
-  const firstProgress = useGame((s) => s.save.progress[cases[0].id]);
+  const activeId = useGame((s) => s.save.activeCaseId);
+  const first = cases.find((c) => c.id === activeId) ?? cases[0];
+  const firstProgress = useGame((s) => s.save.progress[first.id]);
   const [sheet, setSheet] = useState<'help' | 'settings' | null>(null);
 
-  const first = cases[0];
   const time = formatClock(firstProgress?.clockMinutes ?? parseClock(first.clock.start));
 
   return (
@@ -129,11 +131,11 @@ export function LockScreen() {
 
       <Dialog open={sheet === 'help'} onClose={() => setSheet(null)} title="Comment jouer" variant="sheet">
         <ol className="how-list">
-          <li>Tu tiens le téléphone de quelqu’un dont l’argent a disparu. Tout se passe dans ses applis.</li>
-          <li>Dans Échanges, interroge chaque ami en choisissant tes réponses.</li>
-          <li>Notes, Serrure, Box et Photos te donnent des pièces. Elles s’ajoutent au Carnet.</li>
+          <li>Chaque enquête se joue sur un téléphone : le tien, ou la copie de celui d’un proche. Tout se passe dans ses applis.</li>
+          <li>Dans Échanges, interroge chaque personne en choisissant tes réponses.</li>
+          <li>Notes, Photos, Fichiers et les autres applis te donnent des pièces. Elles s’ajoutent au Carnet.</li>
           <li>Dans le Carnet, confronte une déclaration à une pièce pour révéler un mensonge.</li>
-          <li>Dans Enquête, accuse le coupable en présentant les preuves qui le démontrent.</li>
+          <li>Dans Enquête, désigne le coupable en présentant les preuves qui le démontrent.</li>
         </ol>
         <p className="muted small">La progression est sauvegardée automatiquement sur cet appareil.</p>
       </Dialog>

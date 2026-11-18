@@ -65,6 +65,27 @@ export function EvidenceContent({ c, evidence }: { c: Case; evidence: Evidence }
       );
     }
     case 'log':
+      if (content.columns.length > 3) {
+        return (
+          <div className="ev-log">
+            <p className="ev-log-app">{content.app}</p>
+            <ul className="ev-log-list">
+              {content.rows.map((row, i) => (
+                <li key={i}>
+                  <span className="ev-log-head">
+                    <strong>{row[0]}</strong> · {row[1]}
+                  </span>
+                  <span>{row[2]}</span>
+                  <span className="ev-log-origin">
+                    {content.columns[3]} : {row[3]}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {content.note && <p className="ev-note">{content.note}</p>}
+          </div>
+        );
+      }
       return (
         <div className="ev-log">
           <p className="ev-log-app">{content.app}</p>
@@ -118,6 +139,40 @@ export function EvidenceContent({ c, evidence }: { c: Case; evidence: Evidence }
         </blockquote>
       );
     }
+    case 'document':
+      return (
+        <article className="ev-document">
+          <header className="ev-document-head">
+            <span className="ev-document-format">{content.format}</span>
+            {content.reference && <span>{content.reference}</span>}
+          </header>
+          <h3>{evidence.title}</h3>
+          {(content.author || evidence.date) && (
+            <p className="ev-document-meta">{[content.author, evidence.date].filter(Boolean).join(' · ')}</p>
+          )}
+          <dl>
+            {content.sections.map((section, i) => (
+              <div key={i}>
+                {section.heading && <dt>{section.heading}</dt>}
+                <dd>{section.text}</dd>
+              </div>
+            ))}
+          </dl>
+          {content.footer && <p className="ev-document-footer">{content.footer}</p>}
+        </article>
+      );
+    case 'note':
+      return (
+        <div className="ev-note-card">
+          {content.lines.map((line, i) => (
+            <p key={i}>
+              {line.check && <span aria-hidden="true">{line.check === 'done' ? '☑ ' : '☐ '}</span>}
+              {line.check && <span className="visually-hidden">{line.check === 'done' ? 'Fait : ' : 'Pas fait : '}</span>}
+              {line.text}
+            </p>
+          ))}
+        </div>
+      );
     case 'object':
       return (
         <div className="ev-object">
@@ -131,6 +186,9 @@ export function EvidenceContent({ c, evidence }: { c: Case; evidence: Evidence }
 export function EvidenceDetail({ c, evidence }: { c: Case; evidence: Evidence }) {
   return (
     <div className="ev-detail">
+      {(evidence.date || evidence.time) && (
+        <p className="ev-when">{[evidence.date, evidence.time].filter(Boolean).join(' · ')}</p>
+      )}
       {evidence.image && (
         <figure className="ev-photo ev-real-photo">
           <img src={evidence.image} alt={evidence.description} />

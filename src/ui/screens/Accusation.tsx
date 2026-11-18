@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router';
-import type { AccusationEvaluation, Evidence } from '../../engine';
+import { Link, Navigate, useNavigate } from 'react-router';
+import { isResolved, type AccusationEvaluation, type Evidence } from '../../engine';
 import { useGame } from '../../state/store';
 import { ConfirmDialog } from '../components/Dialog';
 import { Icon } from '../components/Icon';
-import { evidenceIcon } from '../evidenceMeta';
+import { evidenceIcon, isClue } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
 import { ContactAvatar } from '../phone/ContactAvatar';
 import { NavBar } from '../phone/NavBar';
@@ -17,13 +17,36 @@ export function Accusation() {
   const [selected, setSelected] = useState<string[]>([]);
   const [confirm, setConfirm] = useState(false);
   const [failure, setFailure] = useState<AccusationEvaluation | null>(null);
+  const [success, setSuccess] = useState(false);
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
-  if (progress.solved) return <Navigate to={`${base}/resolution`} replace />;
+  if (progress.solved && isResolved(c, progress)) return <Navigate to={`${base}/resolution`} replace />;
+  const after = c.solution.afterAccusation;
+  if (progress.solved && after) {
+    return (
+      <div className="app-page grouped">
+        <NavBar back={{ to: `${base}/enquete`, label: 'Enquête' }} title="Accusation" />
+        <section className="group-section">
+          <div className="result result-success" role="status">
+            <p className="result-title">
+              <Icon name="check" /> {success ? 'Accusation retenue' : 'Accusation déjà retenue'}
+            </p>
+            <p>{after.text}</p>
+            <Link to={`${base}/echanges/${after.conversationId}`} className="button-wide button-primary">
+              {after.label}
+            </Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   const max = c.solution.maxEvidence;
   const suspect = c.suspects.find((s) => s.id === suspectId);
-  const pieces = progress.evidence.map((id) => c.evidence.find((e) => e.id === id)).filter((e): e is Evidence => !!e);
+  const pieces = progress.evidence
+    .map((id) => c.evidence.find((e) => e.id === id))
+    .filter((e): e is Evidence => !!e && isClue(e));
+  const candidates = c.suspects.filter((s) => !s.npc);
   const toggle = (id: string) =>
     setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : cur.length < max ? [...cur, id] : cur));
 
@@ -32,7 +55,10 @@ export function Accusation() {
     if (!suspectId) return;
     const { evaluation } = accuse(c.id, suspectId, selected);
     if (!evaluation) return;
-    if (evaluation.result === 'correct') navigate(`${base}/resolution`);
+    if (evaluation.result === 'correct') {
+      if (c.solution.afterAccusation) setSuccess(true);
+      else navigate(`${base}/resolution`);
+    }
     else setFailure(evaluation);
   };
 
@@ -76,13 +102,13 @@ export function Accusation() {
 
   return (
     <div className="app-page grouped">
-      <NavBar back={{ to: `${base}/enquete`, label: 'Enquête' }} largeTitle="Qui ment ?" />
+      <NavBar back={{ to: `${base}/enquete`, label: 'Enquête' }} largeTitle={c.solution.prompt ?? 'Qui ment ?'} />
       <p className="section-intro">Désigne le coupable, puis présente jusqu’à {max} pièces qui le démontrent.</p>
 
       <fieldset className="group-section pick">
         <legend className="section-label">1. Le coupable</legend>
         <div className="suspect-pick">
-          {c.suspects.map((s) => (
+          {candidates.map((s) => (
             <label key={s.id} className="suspect-option">
               <input type="radio" name="suspect" checked={suspectId === s.id} onChange={() => setSuspectId(s.id)} />
               <ContactAvatar suspect={s} size={56} />

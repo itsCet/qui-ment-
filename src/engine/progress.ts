@@ -81,7 +81,12 @@ export function createProgress(c: Case): CaseProgress {
     clockMinutes: parseClock(c.clock.start),
     solved: false,
   };
-  return revealHistory(c, base);
+  const withEvidence = { ...base, evidence: [...new Set(c.initialEvidence ?? [])] };
+  const revealed = revealHistory(c, withEvidence);
+  // L'historique présent à l'ouverture est considéré comme déjà lu.
+  const seen: Record<Id, number> = {};
+  for (const [id, thread] of Object.entries(revealed.threads)) seen[id] = thread.length;
+  return { ...revealed, seen };
 }
 
 /* ------------------------------------------------------------------ */
@@ -266,6 +271,10 @@ function applyEffect(c: Case, p: CaseProgress, effect: Effect): CaseProgress {
       return p.openConversations.includes(effect.conversationId)
         ? p
         : { ...p, openConversations: [...p.openConversations, effect.conversationId] };
+    case 'setClock': {
+      const target = Math.min(parseClock(c.clock.max), parseClock(effect.time));
+      return target > p.clockMinutes ? { ...p, clockMinutes: target } : p;
+    }
     default: {
       const exhaustive: never = effect;
       throw new Error(`Effet inconnu : ${JSON.stringify(exhaustive)}`);
@@ -401,12 +410,14 @@ export function requestHint(c: Case, p: CaseProgress, objectiveId: Id): CaseProg
 /* Avancement global                                                    */
 /* ------------------------------------------------------------------ */
 
+/** L'enquête est-elle terminée (résolution consultable) ? */
+export function isResolved(c: Case, p: CaseProgress): boolean {
+  return c.solution.resolvedWhen ? isConditionMet(p, c.solution.resolvedWhen) : p.solved;
+}
+
 export function completionRatio(c: Case, p: CaseProgress): number {
-  if (p.solved) return 1;
+  if (isResolved(c, p)) return 1;
   const done = c.objectives.filter((o) => isObjectiveComplete(p, o)).length;
   return done / c.objectives.length;
 }
 
-export function isStarted(p: CaseProgress | undefined): boolean {
-  return !!p && (p.choicesMade.length > 0 || p.revealedMessages.length > 0);
-}

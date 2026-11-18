@@ -45,7 +45,7 @@ export function DeviceAppScreen() {
       ) : (
         <div className="device-empty">
           <span className="device-empty-icon">
-            <AppIcon id={app.icon === 'lock' ? 'serrure' : 'box'} />
+            <AppIcon id={app.icon === 'lock' ? 'serrure' : app.icon === 'wifi' ? 'box' : 'sauvegarde'} />
           </span>
           <p>{app.lockedText}</p>
           {canOpen && notes ? (

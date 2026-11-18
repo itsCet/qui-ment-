@@ -40,6 +40,13 @@ export function computeScore(c: Case, p: CaseProgress): ScoreReport {
     lines.push({ label: `Accusation sans preuves suffisantes (${weak})`, points: -weak * c.scoring.insufficientEvidence });
   }
 
+  const mistakes = c.conversations
+    .flatMap((cv) => cv.choices)
+    .filter((ch) => ch.mistake && p.choicesMade.includes(ch.id));
+  if (mistakes.length > 0) {
+    lines.push({ label: `Mauvaises réponses (${mistakes.length})`, points: -mistakes.length * (c.scoring.mistake ?? 0) });
+  }
+
   const raw = lines.reduce((sum, l) => sum + l.points, 0);
   const total = Math.max(0, Math.min(c.scoring.start, raw));
   return { total, max: c.scoring.start, lines, rank: rankFor(total) };

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
-import { computeScore } from '../../engine';
+import { computeScore, isResolved } from '../../engine';
 import { useGame } from '../../state/store';
 import { ConfirmDialog } from '../components/Dialog';
 import { Icon } from '../components/Icon';
@@ -15,7 +15,7 @@ export function Resolution() {
   const [confirm, setConfirm] = useState(false);
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
-  if (!progress.solved) return <Navigate to={`${base}/accusation`} replace />;
+  if (!isResolved(c, progress)) return <Navigate to={`${base}/${progress.solved ? 'enquete' : 'accusation'}`} replace />;
 
   const { resolution } = c.solution;
   const culprit = c.suspects.find((s) => s.id === c.solution.culpritId);

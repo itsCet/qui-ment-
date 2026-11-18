@@ -210,6 +210,16 @@ describe('choix et effets', () => {
     expect(p.revealedMessages).toContain('x2');
   });
 
+  it('avance l’horloge sans jamais revenir en arrière', () => {
+    const p = createProgress(mini);
+    const later = applyEffects(mini, p, [{ type: 'setClock', time: '10:05' }], 'clock:1');
+    expect(later.clockMinutes).toBe(605);
+    const earlier = applyEffects(mini, later, [{ type: 'setClock', time: '09:00' }], 'clock:2');
+    expect(earlier.clockMinutes).toBe(605);
+    const capped = applyEffects(mini, later, [{ type: 'setClock', time: '23:00' }], 'clock:3');
+    expect(capped.clockMinutes).toBe(612);
+  });
+
   it('borne l’horloge narrative', () => {
     let p = revealAllPending(mini, createProgress(mini));
     p = revealAllPending(mini, makeChoice(mini, p, 'q1'));
@@ -220,9 +230,10 @@ describe('choix et effets', () => {
 });
 
 describe('non-lus et indices', () => {
-  it('compte les messages non lus', () => {
+  it('compte les messages non lus (l’historique initial est déjà lu)', () => {
     const p = revealAllPending(mini, createProgress(mini));
-    expect(unreadCount(p, 'c1')).toBe(2);
+    expect(unreadCount(createProgress(mini), 'c1')).toBe(0);
+    expect(unreadCount(p, 'c1')).toBe(1);
     expect(unreadCount(markSeen(p, 'c1'), 'c1')).toBe(0);
   });
 

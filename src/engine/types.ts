@@ -28,7 +28,9 @@ export type Effect =
   | { type: 'addEvidence'; evidenceId: Id }
   | { type: 'addStatement'; statementId: Id }
   | { type: 'setFlag'; flag: string; value?: boolean }
-  | { type: 'openConversation'; conversationId: Id };
+  | { type: 'openConversation'; conversationId: Id }
+  /** Avance l'horloge narrative jusqu'à l'heure indiquée (jamais en arrière). */
+  | { type: 'setClock'; time: string };
 
 /* ------------------------------------------------------------------ */
 /* Données narratives                                                  */
@@ -48,6 +50,8 @@ export interface Suspect {
   shape: 'circle' | 'square' | 'hexagon' | 'diamond';
   /** Conversation privée avec ce suspect (questions posées depuis la fiche). */
   conversationId: Id;
+  /** Personnage secondaire (secours…) : absent des contacts et de l'accusation. */
+  npc?: boolean;
 }
 
 /** Expéditeur : un suspect, le joueur, ou une note système. */
@@ -59,6 +63,8 @@ export interface Message {
   text: string;
   /** Heure fixe (messages d'historique). Sinon l'horloge narrative est utilisée. */
   time?: string;
+  /** Jour affiché avec l'heure, pour les messages d'un autre jour (« lun. 16 nov. »). */
+  date?: string;
   /** Message déjà présent à l'ouverture (historique), révélé sans délai. */
   history?: boolean;
   /** Pièce jointe : une preuve affichée dans la bulle. */
@@ -77,6 +83,8 @@ export interface Choice {
   condition?: Condition;
   /** Si vrai, la question n'apparaît qu'après un effet `unlockQuestion`. */
   locked?: boolean;
+  /** Mauvaise réponse comptée au score (libellé affiché dans le détail du score). */
+  mistake?: string;
   effects?: Effect[];
 }
 
@@ -88,6 +96,11 @@ export interface Conversation {
   /** Ouverte dès le début de l'enquête. */
   initiallyOpen?: boolean;
   subtitle?: string;
+  /**
+   * Conversation d'archive (copie d'un autre téléphone), en lecture seule.
+   * Les messages de `ownerId` y apparaissent comme envoyés par le propriétaire.
+   */
+  archive?: { ownerId: Id; label: string };
   messages: Message[];
   choices: Choice[];
 }
@@ -97,7 +110,16 @@ export type EvidenceContent =
   | { type: 'log'; app: string; columns: string[]; rows: string[][]; note?: string }
   | { type: 'receipt'; shop: string; lines: [string, string][]; footer: string }
   | { type: 'quote'; author: Id; time: string; text: string; context?: string }
-  | { type: 'object'; icon: string; note: string };
+  | { type: 'object'; icon: string; note: string }
+  | {
+      type: 'document';
+      format: string;
+      reference?: string;
+      author?: string;
+      sections: { heading?: string; text: string }[];
+      footer?: string;
+    }
+  | { type: 'note'; lines: { text: string; check?: 'done' | 'todo' }[] };
 
 export interface Evidence {
   id: Id;
@@ -109,8 +131,12 @@ export interface Evidence {
   source: string;
   /** Heure de référence éventuelle, pour l'affichage. */
   time?: string;
+  /** Date lisible (« jeu. 19 nov. »), affichée avec l'heure. */
+  date?: string;
   /** Photo locale (chemin public), affichée dans l'appli Photos et dans les messages. */
   image?: string;
+  /** Pièce du quotidien (photos ordinaires) : visible dans Photos, pas dans le carnet. */
+  everyday?: boolean;
   content: EvidenceContent;
 }
 
@@ -155,7 +181,13 @@ export interface EvidenceRequirement {
 }
 
 export interface Solution {
+  /** Question posée sur l'écran d'accusation. */
+  prompt?: string;
   culpritId: Id;
+  /** Condition de fin de l'enquête (par défaut : accusation correcte). */
+  resolvedWhen?: Condition;
+  /** Après une accusation correcte, si l'enquête n'est pas encore terminée. */
+  afterAccusation?: { text: string; conversationId: Id; label: string };
   requirements: EvidenceRequirement[];
   maxEvidence: number;
   wrongSuspectFeedback: Record<Id, string>;
@@ -174,13 +206,15 @@ export interface ScoringRules {
   hintCost: [number, number, number];
   wrongSuspect: number;
   insufficientEvidence: number;
+  /** Coût d'un choix marqué `mistake`. */
+  mistake?: number;
 }
 
 /** Appli du téléphone qui affiche une pièce (serrure, box Internet…). */
 export interface DeviceApp {
   id: Id;
   label: string;
-  icon: 'lock' | 'wifi';
+  icon: 'lock' | 'wifi' | 'cloud';
   /** Pièce affichée par l'appli. */
   evidenceId: Id;
   /** Choix joué à la première ouverture (s'il est disponible). */
@@ -196,6 +230,8 @@ export interface Device {
   weather: { city: string; temperature: string; condition: string };
   event: { title: string; time: string };
   apps: DeviceApp[];
+  /** Le téléphone affiche la copie d'un autre téléphone. */
+  copy?: { ownerName: string; syncedAt: string };
 }
 
 export interface Case {
@@ -212,6 +248,8 @@ export interface Case {
   clock: { start: string; perChoiceMinutes: number; max: string; deadlineLabel: string };
   suspects: Suspect[];
   conversations: Conversation[];
+  /** Pièces présentes dès le départ (par exemple dans une copie de téléphone). */
+  initialEvidence?: Id[];
   evidence: Evidence[];
   statements: Statement[];
   contradictions: Contradiction[];

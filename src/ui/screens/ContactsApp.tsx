@@ -10,7 +10,7 @@ export function ContactsApp() {
   const { c, progress } = useCaseRoute();
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
-  const sorted = [...c.suspects].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+  const sorted = c.suspects.filter((s) => !s.npc).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   return (
     <div className="app-page">
       <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Contacts" />

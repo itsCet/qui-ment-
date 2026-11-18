@@ -105,9 +105,16 @@ export function validateCase(c: Case): string[] {
           break;
         case 'setFlag':
           break;
+        case 'setClock':
+          if (!/^\d{2}:\d{2}$/.test(e.time)) problems.push(`${where} : heure invalide ${e.time}`);
+          break;
       }
     }
   };
+
+  for (const id of c.initialEvidence ?? []) {
+    if (!evidence.has(id)) problems.push(`Pièce initiale inconnue : ${id}`);
+  }
 
   for (const s of c.suspects) {
     if (!conversations.has(s.conversationId)) problems.push(`Suspect ${s.id} : conversation inconnue ${s.conversationId}`);
@@ -117,6 +124,9 @@ export function validateCase(c: Case): string[] {
     for (const p of cv.participants) {
       if (!suspects.has(p)) problems.push(`Conversation ${cv.id} : participant inconnu ${p}`);
     }
+    if (cv.archive && !suspects.has(cv.archive.ownerId))
+      problems.push(`Conversation ${cv.id} : propriétaire d’archive inconnu ${cv.archive.ownerId}`);
+    if (cv.archive && cv.choices.length > 0) problems.push(`Conversation ${cv.id} : une archive n’a pas de choix`);
     for (const m of cv.messages) {
       const where = `Message ${m.id}`;
       if (m.from !== 'player' && m.from !== 'system' && !suspects.has(m.from))
@@ -170,7 +180,12 @@ export function validateCase(c: Case): string[] {
   for (const id of Object.keys(sol.wrongSuspectFeedback)) {
     if (!suspects.has(id)) problems.push(`Solution : retour pour suspect inconnu ${id}`);
   }
+  checkCondition('Solution (fin)', sol.resolvedWhen);
+  if (sol.afterAccusation && !conversations.has(sol.afterAccusation.conversationId))
+    problems.push(`Solution : conversation inconnue ${sol.afterAccusation.conversationId}`);
+  if (c.suspects.find((s) => s.id === sol.culpritId)?.npc) problems.push('Solution : le coupable ne peut pas être un figurant');
   for (const s of c.suspects) {
+    if (s.npc) continue;
     if (s.id !== sol.culpritId && !sol.wrongSuspectFeedback[s.id])
       problems.push(`Solution : pas de retour pour l’accusation de ${s.id}`);
   }

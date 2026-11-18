@@ -46,7 +46,9 @@ function useBanners(c: Case | undefined, progress: CaseProgress | undefined, act
       });
     }
 
-    const newEvidence = progress.evidence.slice(prev.evidence.length);
+    const newEvidence = progress.evidence
+      .slice(prev.evidence.length)
+      .filter((id) => !c.evidence.find((e) => e.id === id)?.everyday);
     if (newEvidence.length > 0) {
       const first = c.evidence.find((e) => e.id === newEvidence[0]);
       added.push({

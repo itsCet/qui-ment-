@@ -3,9 +3,17 @@
 Jeu d’enquête narratif en français, présenté comme un téléphone fictif. Le joueur lit des
 conversations, interroge des suspects, collecte des preuves et démontre qui ment.
 
-Première enquête : **« Le cadeau disparu »** (5 à 10 minutes). Une enveloppe de 500 CHF
-destinée à l’anniversaire de Léa disparaît d’un appartement lausannois ; quatre amis sont
-suspects.
+Deux enquêtes, choisies depuis l’écran verrouillé, avec des sauvegardes séparées :
+
+1. **« Le cadeau disparu »** (5 à 10 minutes). Une enveloppe de 500 CHF destinée à
+   l’anniversaire de Léa disparaît d’un appartement lausannois ; quatre amis sont suspects.
+2. **« Le dernier signal »** (15 à 20 minutes, thriller). Tu es Alex. Ton frère Élias,
+   technicien dans un observatoire de montagne, a disparu après un message de départ qui
+   ne lui ressemble pas. Tu lis une **copie en lecture seule** de son téléphone
+   (synchronisée jeudi à 22:14) et tu écris en ton nom à sa sœur, à ses collègues, puis
+   aux secours. Il faut démontrer qui a envoyé le message, comprendre pourquoi cette
+   personne ment, et guider les secours vers le bon endroit. La conversation avec les
+   secours est entièrement fictive : aucun appel ni service réel n’est contacté.
 
 Application web mobile installable (PWA), en portrait, jouable à une main, hors ligne après
 le premier chargement. Aucun backend, aucun compte.
@@ -86,7 +94,8 @@ src/
   ui/            composants et écrans (aucune logique de jeu)
 docs/
   format-enquetes.md               format pour ajouter une enquête
-  conception/le-cadeau-disparu.md  document interne : vérité, chronologie, solution
+  conception/le-cadeau-disparu.md  document interne du niveau 1 : vérité, chronologie, solution
+  conception/le-dernier-signal.md  document interne du niveau 2 : vérité, chronologie, savoirs, déblocages
 public/          icônes PWA (générées par scripts/generate-icons.cjs)
 ```
 
@@ -107,9 +116,11 @@ Le jeu se présente comme le téléphone de Sam, en thème clair.
 3. **Échanges** : groupe et discussions privées ; messages révélés progressivement avec
    indicateur de saisie ; réponses proposées en bulles de suggestion ; photos dans les
    bulles ; « Afficher tout de suite » ; notifications en bannière.
-4. **Notes** : la note de Sam, avec une liste de choses à vérifier (cuisine, salon,
-   commode…) à cocher.
-5. **Photos**, **Serrure**, **Box** : la galerie et les journaux de l’appartement.
+4. **Notes** : les notes du joueur, avec une liste de choses à vérifier à cocher ; dans
+   le niveau 2, aussi les notes d’Élias issues de la copie.
+5. **Photos**, **Fichiers**, **Serrure**, **Box**, **Sauvegarde** : la galerie (classée
+   par date, avec agrandissement), les documents, et les journaux propres à chaque
+   enquête.
 6. **Contacts** (fiches suspects) : présentation, déclarations découvertes (marquées
    « Contredite »), questions disponibles.
 7. **Carnet** : pièces et leur provenance ; confrontation déclaration → pièce par simple
@@ -123,7 +134,10 @@ l’écran.
 
 ## Photos
 
-Les photos de l’enquête (`public/photos/*.webp` : enveloppe, salon, chargeur, poubelle)
+Niveau 2 : les photos (`public/photos/signal/*.webp`) ont été fournies par le
+commanditaire du projet et intégrées localement (redimensionnées en WebP).
+
+Niveau 1 : les photos (`public/photos/*.webp` : enveloppe, salon, chargeur, poubelle)
 ont été générées avec Ideogram puis intégrées localement : le jeu n’en charge aucune à
 distance et elles restent disponibles hors ligne. Les contacts utilisent des avatars à
 initiales. Pour remplacer une photo, il suffit de garder le même nom de fichier ou de
@@ -132,7 +146,7 @@ changer le champ `image` de la pièce dans `src/cases/le-cadeau-disparu/evidence
 ## Score
 
 100 points au départ. Indice : −5, −10, −15 selon le niveau. Mauvais suspect : −25. Bon
-suspect sans preuves suffisantes : −15. Les confrontations ratées et la vitesse de lecture
+suspect sans preuves suffisantes : −15. Niveau 2 : mauvaise réponse aux secours −10. Les confrontations ratées et la vitesse de lecture
 ne comptent pas. Le calcul est expliqué au joueur dans le dossier et sur l’écran de
 résolution.
 

@@ -9,7 +9,8 @@ import { EnqueteApp } from './ui/screens/EnqueteApp';
 import { HomeScreen } from './ui/screens/HomeScreen';
 import { LockScreen } from './ui/screens/LockScreen';
 import { MessagesApp } from './ui/screens/MessagesApp';
-import { NotesApp } from './ui/screens/NotesApp';
+import { FichiersApp, FichierViewer } from './ui/screens/FichiersApp';
+import { NoteDetail, NotesApp } from './ui/screens/NotesApp';
 import { PhoneLayout } from './ui/screens/PhoneLayout';
 import { PhotosApp, PhotoViewer } from './ui/screens/PhotosApp';
 import { Resolution } from './ui/screens/Resolution';
@@ -26,6 +27,9 @@ const router = createBrowserRouter([
       { path: 'photos', element: <PhotosApp /> },
       { path: 'photos/:evidenceId', element: <PhotoViewer /> },
       { path: 'notes', element: <NotesApp /> },
+      { path: 'notes/:noteId', element: <NoteDetail /> },
+      { path: 'fichiers', element: <FichiersApp /> },
+      { path: 'fichiers/:evidenceId', element: <FichierViewer /> },
       { path: 'app/:appId', element: <DeviceAppScreen /> },
       { path: 'contacts', element: <ContactsApp /> },
       { path: 'contacts/:suspectId', element: <ContactSheet /> },

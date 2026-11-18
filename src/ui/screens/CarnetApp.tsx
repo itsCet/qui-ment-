@@ -5,7 +5,7 @@ import { useGame } from '../../state/store';
 import { Dialog } from '../components/Dialog';
 import { EvidenceDetail } from '../components/EvidenceView';
 import { Icon } from '../components/Icon';
-import { evidenceIcon, evidenceKindLabel } from '../evidenceMeta';
+import { evidenceIcon, evidenceKindLabel, isClue } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
 import { ContactAvatar } from '../phone/ContactAvatar';
 import { NavBar } from '../phone/NavBar';
@@ -36,7 +36,9 @@ export function CarnetApp() {
   const statements = progress.statements
     .map((id) => c.statements.find((s) => s.id === id))
     .filter((s): s is NonNullable<typeof s> => !!s);
-  const pieces = progress.evidence.map((id) => c.evidence.find((e) => e.id === id)).filter((e): e is Evidence => !!e);
+  const pieces = progress.evidence
+    .map((id) => c.evidence.find((e) => e.id === id))
+    .filter((e): e is Evidence => !!e && isClue(e));
   const found = c.contradictions.filter((ct) => progress.contradictions.includes(ct.id));
   const reset = () => {
     setOutcome(null);
@@ -82,9 +84,10 @@ export function CarnetApp() {
               </li>
             ))}
           </ul>
-          {pieces.length < c.evidence.length && (
+          {pieces.length < c.evidence.filter(isClue).length && (
             <p className="section-foot">
-              {c.evidence.length - pieces.length} pièce{c.evidence.length - pieces.length > 1 ? 's' : ''} encore à découvrir.
+              {c.evidence.filter(isClue).length - pieces.length} pièce
+              {c.evidence.filter(isClue).length - pieces.length > 1 ? 's' : ''} encore à découvrir.
             </p>
           )}
         </section>

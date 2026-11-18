@@ -76,24 +76,38 @@ export function ChatView() {
   const otherUnread = c.conversations
     .filter((cv) => cv.kind !== 'notes' && cv.id !== conversationId)
     .reduce((sum, cv) => sum + unreadCount(progress, cv.id), 0);
-  const subtitle = isGroup
+  const subtitle = conversation.archive
+    ? `${conversation.archive.label} · lecture seule`
+    : conversation.subtitle && !isGroup
+      ? conversation.subtitle
+      : isGroup
     ? conversation.participants.map((id) => c.suspects.find((s) => s.id === id)?.name.split(' ')[0]).join(', ') + ', toi'
     : (c.suspects.find((s) => s.id === conversation.participants[0])?.role ?? '');
-  const contactLink = !isGroup ? `${base}/contacts/${conversation.participants[0]}` : null;
+  const contact = !isGroup ? c.suspects.find((s) => s.id === conversation.participants[0]) : undefined;
+  const contactLink = contact && !contact.npc ? `${base}/contacts/${contact.id}` : null;
 
-  const senderOf = (entry: ThreadEntry | undefined): string | undefined =>
-    !entry ? undefined : entry.kind === 'choice' ? 'player' : index.messages.get(entry.id)?.message.from;
+  const owner = conversation.archive?.ownerId;
+  const ownerName = owner ? c.suspects.find((s) => s.id === owner)?.name.split(' ')[0] : undefined;
+  const senderOf = (entry: ThreadEntry | undefined): string | undefined => {
+    if (!entry) return undefined;
+    if (entry.kind === 'choice') return 'player';
+    const from = index.messages.get(entry.id)?.message.from;
+    return from === owner ? 'player' : from;
+  };
+  const dayOf = (entry: ThreadEntry | undefined) =>
+    entry?.kind === 'message' ? (index.messages.get(entry.id)?.message.date ?? '') : '';
 
   const renderEntry = (entry: ThreadEntry, i: number) => {
     const prev = thread[i - 1];
     const nextEntry = thread[i + 1];
-    const showTime = !prev || Math.abs(parseClock(entry.time) - parseClock(prev.time)) >= 15;
+    const showTime =
+      !prev || dayOf(prev) !== dayOf(entry) || Math.abs(parseClock(entry.time) - parseClock(prev.time)) >= 15;
     const from = senderOf(entry);
     const firstOfRun = senderOf(prev) !== from || showTime;
     const lastOfRun = senderOf(nextEntry) !== from;
     const timeLabel = showTime ? (
       <li key={`t-${i}`} className="chat-time">
-        {c.device.date.weekday} {c.device.date.day} · {entry.time}
+        {dayOf(entry) || `${c.device.date.weekday} ${c.device.date.day}`} · {entry.time}
       </li>
     ) : null;
 
@@ -121,14 +135,16 @@ export function ChatView() {
         </li>,
       ];
     }
-    if (message.from === 'player') {
+    if (message.from === 'player' || message.from === owner) {
       return [
         timeLabel,
         <li key={`m-${entry.id}`} className={`row row-me${lastOfRun ? ' run-end' : ''}`}>
+          {owner && firstOfRun && <span className="sender sender-me">{ownerName}</span>}
           <p className="bubble bubble-me">
-            <span className="visually-hidden">Toi, {entry.time} : </span>
+            <span className="visually-hidden">{owner ? ownerName : 'Toi'}, {entry.time} : </span>
             {message.text}
           </p>
+          {attachment && <Attachment evidence={attachment} onOpen={setOpenEvidence} />}
         </li>,
       ];
     }
@@ -189,7 +205,12 @@ export function ChatView() {
       </div>
 
       <div className="chat-tray">
-        {next ? (
+        {conversation.archive ? (
+          <p className="tray-empty">
+            Copie en lecture seule, synchronisée {c.device.copy ? `le ${c.device.copy.syncedAt}` : 'avant ta lecture'}. Pour écrire à
+            quelqu’un, ouvre ta propre conversation avec cette personne.
+          </p>
+        ) : next ? (
           <div className="chips">
             <button type="button" className="chip chip-ghost" onClick={() => revealConversation(c.id, conversationId)}>
               <Icon name="forward" size={16} /> Afficher tout de suite
