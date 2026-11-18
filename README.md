@@ -96,22 +96,38 @@ aucun code exécutable (pas de `eval`, conditions et effets sous forme de donné
 
 ## Écrans
 
-1. **Accueil** : identité du jeu, carte de l’enquête et avancement, Commencer/Reprendre,
-   Recommencer (avec confirmation), réglage « messages instantanés ».
-2. **Dossier** : résumé de l’affaire, objectif actuel, indices (3 niveaux), accès rapides,
-   progression, explication du score.
-3. **Conversations** : groupe, discussions privées et notes ; messages révélés
-   progressivement avec indicateur de saisie ; choix de réponses ; historique ; bouton
-   « Afficher tout de suite » ; badges de non-lus.
-4. **Fiche suspect** : avatar local, présentation, déclarations découvertes (marquées
-   « Contredite » le cas échéant), questions disponibles.
-5. **Carnet** : pièces et leur provenance ; confrontation déclaration → pièce par simple
-   sélection (pas de glisser-déposer) ; retour contextuel en cas d’erreur ; mensonges
-   révélés.
-6. **Accusation** : choix du suspect, jusqu’à 4 preuves, confirmation ; échec expliqué,
-   enquête poursuivie.
-7. **Résolution** : reconstitution chronologique, preuves décisives, fausses pistes, score
-   détaillé, rejouer.
+Le jeu se présente comme le téléphone de Sam, en thème clair.
+
+1. **Écran verrouillé** (menu) : heure de l’enquête, carte de l’enquête et avancement,
+   Commencer/Reprendre, Recommencer (avec confirmation), « Comment jouer », Réglages
+   (messages instantanés).
+2. **Écran d’accueil** : widgets Calendrier, Météo et Objectif ; applis Échanges, Photos,
+   Notes, Contacts, Serrure, Box, Carnet, Enquête ; badges de non-lus ; barre d’accueil
+   pour revenir à l’écran d’accueil depuis n’importe quelle appli.
+3. **Échanges** : groupe et discussions privées ; messages révélés progressivement avec
+   indicateur de saisie ; réponses proposées en bulles de suggestion ; photos dans les
+   bulles ; « Afficher tout de suite » ; notifications en bannière.
+4. **Notes** : la note de Sam, avec une liste de choses à vérifier (cuisine, salon,
+   commode…) à cocher.
+5. **Photos**, **Serrure**, **Box** : la galerie et les journaux de l’appartement.
+6. **Contacts** (fiches suspects) : présentation, déclarations découvertes (marquées
+   « Contredite »), questions disponibles.
+7. **Carnet** : pièces et leur provenance ; confrontation déclaration → pièce par simple
+   sélection ; retour contextuel ; mensonges révélés.
+8. **Enquête** : résumé, objectif, indices (3 niveaux), progression, score, accusation
+   (suspect + jusqu’à 4 preuves + confirmation) et **résolution** (reconstitution,
+   preuves décisives, fausses pistes, score détaillé, rejouer).
+
+Sur un écran large, le téléphone est affiché dans un cadre ; sur mobile, il occupe tout
+l’écran.
+
+## Photos
+
+Les photos de l’enquête (`public/photos/*.webp` : enveloppe, salon, chargeur, poubelle)
+ont été générées avec Ideogram puis intégrées localement : le jeu n’en charge aucune à
+distance et elles restent disponibles hors ligne. Les contacts utilisent des avatars à
+initiales. Pour remplacer une photo, il suffit de garder le même nom de fichier ou de
+changer le champ `image` de la pièce dans `src/cases/le-cadeau-disparu/evidence.ts`.
 
 ## Score
 
@@ -128,8 +144,8 @@ résolution.
   Vérifié sans défilement horizontal à 320 px avec un texte à 200 %.
 - Safe areas (`env(safe-area-inset-*)`), `100dvh`.
 - `prefers-reduced-motion` : animations neutralisées.
-- Information jamais portée par la couleur seule : avatars avec formes et initiales,
-  libellés « Contredite », « Nouveau », coches et textes explicites.
+- Information jamais portée par la couleur seule : avatars à initiales, libellés
+  « Contredite », « Nouveau », coches et textes explicites.
 - Navigation au clavier, focus visible, fenêtres modales natives (`<dialog>`), zones
   `aria-live` pour les messages et notifications.
 

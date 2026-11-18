@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
-import type { AccusationEvaluation } from '../../engine';
+import type { AccusationEvaluation, Evidence } from '../../engine';
 import { useGame } from '../../state/store';
-import { Avatar } from '../components/Avatar';
 import { ConfirmDialog } from '../components/Dialog';
-import { evidenceIcon } from '../evidenceMeta';
 import { Icon } from '../components/Icon';
+import { evidenceIcon } from '../evidenceMeta';
 import { useCaseRoute } from '../hooks';
+import { ContactAvatar } from '../phone/ContactAvatar';
+import { NavBar } from '../phone/NavBar';
 
 export function Accusation() {
   const { c, progress } = useCaseRoute();
@@ -16,14 +17,13 @@ export function Accusation() {
   const [selected, setSelected] = useState<string[]>([]);
   const [confirm, setConfirm] = useState(false);
   const [failure, setFailure] = useState<AccusationEvaluation | null>(null);
-
   if (!c || !progress) return null;
-  if (progress.solved) return <Navigate to={`/enquete/${c.id}/resolution`} replace />;
+  const base = `/enquete/${c.id}`;
+  if (progress.solved) return <Navigate to={`${base}/resolution`} replace />;
 
   const max = c.solution.maxEvidence;
   const suspect = c.suspects.find((s) => s.id === suspectId);
-  const pieces = progress.evidence.map((id) => c.evidence.find((e) => e.id === id)).filter((e) => !!e);
-
+  const pieces = progress.evidence.map((id) => c.evidence.find((e) => e.id === id)).filter((e): e is Evidence => !!e);
   const toggle = (id: string) =>
     setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : cur.length < max ? [...cur, id] : cur));
 
@@ -32,43 +32,36 @@ export function Accusation() {
     if (!suspectId) return;
     const { evaluation } = accuse(c.id, suspectId, selected);
     if (!evaluation) return;
-    if (evaluation.result === 'correct') navigate(`/enquete/${c.id}/resolution`);
+    if (evaluation.result === 'correct') navigate(`${base}/resolution`);
     else setFailure(evaluation);
   };
 
   if (failure) {
     return (
-      <div className="screen">
-        <header className="screen-header">
-          <div>
-            <p className="eyebrow">Accusation</p>
-            <h1>L’accusation ne tient pas</h1>
+      <div className="app-page grouped">
+        <NavBar back={{ to: `${base}/enquete`, label: 'Enquête' }} title="Accusation" />
+        <section className="group-section">
+          <div className="result result-fail" role="alert">
+            <p className="result-title">
+              <Icon name="warning" />
+              {failure.result === 'wrongSuspect' ? 'Ce n’est pas la bonne personne' : 'Preuves insuffisantes'}
+            </p>
+            {failure.feedback.map((f, i) => (
+              <p key={i}>{f}</p>
+            ))}
+            <p className="small">
+              −{failure.result === 'wrongSuspect' ? c.scoring.wrongSuspect : c.scoring.insufficientEvidence} points. Tu peux
+              poursuivre l’enquête et accuser à nouveau.
+            </p>
           </div>
-        </header>
-        <section className="result result-fail" role="alert">
-          <p className="result-title">
-            <Icon name="warning" />
-            {failure.result === 'wrongSuspect' ? 'Ce n’est pas la bonne personne' : 'Preuves insuffisantes'}
-          </p>
-          {failure.feedback.map((f, i) => (
-            <p key={i}>{f}</p>
-          ))}
-          <p className="small">
-            Pénalité : −{failure.result === 'wrongSuspect' ? c.scoring.wrongSuspect : c.scoring.insufficientEvidence} points.
-            Tu peux poursuivre l’enquête et accuser à nouveau.
-          </p>
         </section>
-        <div className="stack">
-          <button
-            type="button"
-            className="button button-primary button-block"
-            onClick={() => navigate(`/enquete/${c.id}`)}
-          >
+        <section className="group-section stack">
+          <button type="button" className="button-wide button-primary" onClick={() => navigate(base)}>
             Poursuivre l’enquête
           </button>
           <button
             type="button"
-            className="button button-ghost button-block"
+            className="button-wide"
             onClick={() => {
               setFailure(null);
               setSelected([]);
@@ -76,77 +69,68 @@ export function Accusation() {
           >
             Revoir mon accusation
           </button>
-        </div>
+        </section>
       </div>
     );
   }
 
   return (
-    <div className="screen">
-      <header className="screen-header">
-        <div>
-          <p className="eyebrow">Accusation</p>
-          <h1>Qui ment ?</h1>
-        </div>
-      </header>
-      <p className="muted">
-        Un nom ne suffit pas : présente les pièces qui démontrent la culpabilité. Tu peux en choisir jusqu’à {max}.
-      </p>
+    <div className="app-page grouped">
+      <NavBar back={{ to: `${base}/enquete`, label: 'Enquête' }} largeTitle="Qui ment ?" />
+      <p className="section-intro">Désigne le coupable, puis présente jusqu’à {max} pièces qui le démontrent.</p>
 
-      <fieldset className="pick">
-        <legend>
-          <span className="step">1</span> Désigne le coupable
-        </legend>
+      <fieldset className="group-section pick">
+        <legend className="section-label">1. Le coupable</legend>
         <div className="suspect-pick">
           {c.suspects.map((s) => (
-            <label key={s.id} className="suspect-pick-option">
-              <input
-                type="radio"
-                name="suspect"
-                value={s.id}
-                checked={suspectId === s.id}
-                onChange={() => setSuspectId(s.id)}
-              />
-              <Avatar suspect={s} size={52} />
+            <label key={s.id} className="suspect-option">
+              <input type="radio" name="suspect" checked={suspectId === s.id} onChange={() => setSuspectId(s.id)} />
+              <ContactAvatar suspect={s} size={56} />
               <span>{s.name.split(' ')[0]}</span>
-              <span className="pick-check" aria-hidden="true">
-                <Icon name="check" size={16} />
+              <span className="suspect-check" aria-hidden="true">
+                <Icon name="check" size={14} />
               </span>
             </label>
           ))}
         </div>
       </fieldset>
 
-      <fieldset className="pick">
-        <legend>
-          <span className="step">2</span> Sélectionne les preuves ({selected.length}/{max})
+      <fieldset className="group-section pick">
+        <legend className="section-label">
+          2. Les preuves ({selected.length}/{max})
         </legend>
-        {pieces.map((e) => {
-          const checked = selected.includes(e.id);
-          const disabled = !checked && selected.length >= max;
-          return (
-            <label key={e.id} className={`pick-option${disabled ? ' is-disabled' : ''}`}>
-              <input type="checkbox" checked={checked} disabled={disabled} onChange={() => toggle(e.id)} />
-              <span className="pick-icon">
-                <Icon name={evidenceIcon(e)} />
-              </span>
-              <span>
-                <span className="pick-who">{e.title}</span>
-                {e.summary}
-              </span>
-            </label>
-          );
-        })}
+        <div className="grouped-list">
+          {pieces.map((e) => {
+            const checked = selected.includes(e.id);
+            const disabled = !checked && selected.length >= max;
+            return (
+              <label key={e.id} className={`list-row pick-row${disabled ? ' is-disabled' : ''}`}>
+                <input type="checkbox" checked={checked} disabled={disabled} onChange={() => toggle(e.id)} />
+                {e.image ? (
+                  <img className="thumb" src={e.image} alt="" loading="lazy" />
+                ) : (
+                  <span className="thumb thumb-icon">
+                    <Icon name={evidenceIcon(e)} size={20} />
+                  </span>
+                )}
+                <span className="list-row-text">
+                  <span className="list-row-title">{e.title}</span>
+                  <span className="list-row-sub">{e.summary}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
       </fieldset>
 
       <div className="form-action">
         <button
           type="button"
-          className="button button-danger button-block"
+          className="button-wide button-danger"
           disabled={!suspectId || selected.length === 0}
           onClick={() => setConfirm(true)}
         >
-          <Icon name="gavel" size={18} /> Accuser
+          Accuser
         </button>
         {(!suspectId || selected.length === 0) && (
           <p className="small muted center">Choisis un suspect et au moins une preuve.</p>
@@ -157,6 +141,7 @@ export function Accusation() {
         open={confirm}
         title="Confirmer l’accusation ?"
         confirmLabel={`Accuser ${suspect?.name.split(' ')[0] ?? ''}`}
+        danger
         onCancel={() => setConfirm(false)}
         onConfirm={submit}
         message={
@@ -170,8 +155,8 @@ export function Accusation() {
               ))}
             </ul>
             <p className="small muted">
-              Une erreur coûte des points ({c.scoring.wrongSuspect} pour un mauvais suspect, {c.scoring.insufficientEvidence}{' '}
-              pour des preuves insuffisantes), mais l’enquête continue.
+              Une erreur coûte des points ({c.scoring.wrongSuspect} pour un mauvais suspect, {c.scoring.insufficientEvidence} pour
+              des preuves insuffisantes), mais l’enquête continue.
             </p>
           </>
         }

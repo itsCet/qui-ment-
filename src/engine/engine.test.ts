@@ -25,6 +25,13 @@ const mini: Case = {
   difficulty: '',
   intro: [],
   playerName: 'Sam',
+  device: {
+    ownerName: 'Sam',
+    date: { weekday: 'Samedi', day: '14', month: 'novembre' },
+    weather: { city: 'X', temperature: '1°', condition: '' },
+    event: { title: '', time: '' },
+    apps: [],
+  },
   clock: { start: '10:00', perChoiceMinutes: 5, max: '10:12', deadlineLabel: '' },
   suspects: [
     { id: 'a', name: 'A', initials: 'A', age: 1, role: '', bio: '', hue: 0, shape: 'circle', conversationId: 'c1' },

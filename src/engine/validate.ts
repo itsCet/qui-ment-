@@ -155,6 +155,11 @@ export function validateCase(c: Case): string[] {
     if (!unlockedSomewhere.has(id)) problems.push(`Choix verrouillé jamais débloqué : ${id}`);
   }
 
+  for (const app of c.device.apps) {
+    if (!evidence.has(app.evidenceId)) problems.push(`Appli ${app.id} : preuve inconnue ${app.evidenceId}`);
+    if (!choices.has(app.openChoiceId)) problems.push(`Appli ${app.id} : choix inconnu ${app.openChoiceId}`);
+  }
+
   const sol = c.solution;
   if (!suspects.has(sol.culpritId)) problems.push(`Solution : coupable inconnu ${sol.culpritId}`);
   if (sol.requirements.length > sol.maxEvidence) problems.push('Solution : plus d’exigences que de preuves autorisées');

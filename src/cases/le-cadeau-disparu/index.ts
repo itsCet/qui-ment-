@@ -14,6 +14,31 @@ export const leCadeauDisparu: Case = {
   duration: '5 à 10 min',
   difficulty: 'Initiation',
   playerName: 'Sam',
+  device: {
+    ownerName: 'Sam',
+    date: { weekday: 'Samedi', day: '14', month: 'novembre' },
+    weather: { city: 'Lausanne', temperature: '6°', condition: 'Nuageux' },
+    event: { title: 'Anniversaire surprise de Léa', time: '20:00' },
+    apps: [
+      {
+        id: 'serrure',
+        label: 'Serrure',
+        icon: 'lock',
+        evidenceId: 'ev_journal_serrure',
+        openChoiceId: 'ch_notes_serrure',
+        lockedText: 'Historique des ouvertures de la porte d’entrée.',
+      },
+      {
+        id: 'box',
+        label: 'Box',
+        icon: 'wifi',
+        evidenceId: 'ev_journal_routeur',
+        openChoiceId: 'ch_notes_routeur',
+        lockedText:
+          'Tu n’as jamais ouvert l’appli de ta box Internet. Tu ne sais même plus ce qu’elle enregistre. Quelqu’un pourra peut-être te mettre sur la piste.',
+      },
+    ],
+  },
   intro: [
     'Samedi 14 novembre, Lausanne. Tu organises chez toi l’anniversaire surprise de Léa, qui fête ses 30 ans.',
     'Ses quatre amis ont cotisé avec toi : 500 CHF en liquide dans une enveloppe, pour son voyage à Lisbonne.',

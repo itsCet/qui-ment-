@@ -9,6 +9,7 @@ export const evidence: Evidence[] = [
       'Une enveloppe kraft marquée « Pour Léa », posée dans le tiroir de la commode de l’entrée. Inès précise : cinq billets de 100, recomptés deux fois.',
     source: 'Envoyée par Inès dans le groupe à 16:32.',
     time: '16:32',
+    image: '/photos/enveloppe.webp',
     content: { type: 'photo', visual: 'enveloppe', caption: 'Tiroir de la commode de l’entrée, 16:32' },
   },
   {
@@ -35,6 +36,7 @@ export const evidence: Evidence[] = [
       'Guirlandes et banderole « 30 ans ». Sur l’accoudoir du canapé, la veste kaki de Hugo. Personne n’apparaît sur la photo.',
     source: 'Envoyée par Clara dans le groupe à 17:42.',
     time: '17:42',
+    image: '/photos/salon.webp',
     content: { type: 'photo', visual: 'salon', caption: 'Salon, 17:42 — la veste kaki de Hugo sur l’accoudoir' },
   },
   {
@@ -92,6 +94,7 @@ export const evidence: Evidence[] = [
       'Retrouvé dans la poubelle de la cuisine, avec des éclats de verre bleu emballés dans du papier journal. Le Bazar du Midi est à dix minutes à pied.',
     source: 'Trouvé dans ta poubelle de cuisine.',
     time: '18:09',
+    image: '/photos/poubelle.webp',
     content: {
       type: 'receipt',
       shop: 'Bazar du Midi — Lausanne',
@@ -110,6 +113,7 @@ export const evidence: Evidence[] = [
     description:
       'Un chargeur de téléphone blanc, branché à la prise derrière le canapé. Sur le bloc, des initiales au feutre : « Y.H. ».',
     source: 'Trouvé derrière ton canapé à ton retour.',
+    image: '/photos/chargeur.webp',
     content: { type: 'object', icon: 'plug', note: 'Toujours branché à 18:45. Initiales « Y.H. » au feutre.' },
   },
   {

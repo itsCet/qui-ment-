@@ -109,6 +109,8 @@ export interface Evidence {
   source: string;
   /** Heure de référence éventuelle, pour l'affichage. */
   time?: string;
+  /** Photo locale (chemin public), affichée dans l'appli Photos et dans les messages. */
+  image?: string;
   content: EvidenceContent;
 }
 
@@ -174,6 +176,28 @@ export interface ScoringRules {
   insufficientEvidence: number;
 }
 
+/** Appli du téléphone qui affiche une pièce (serrure, box Internet…). */
+export interface DeviceApp {
+  id: Id;
+  label: string;
+  icon: 'lock' | 'wifi';
+  /** Pièce affichée par l'appli. */
+  evidenceId: Id;
+  /** Choix joué à la première ouverture (s'il est disponible). */
+  openChoiceId: Id;
+  /** Texte affiché tant que l'appli ne peut pas encore servir. */
+  lockedText: string;
+}
+
+/** Habillage du téléphone fictif du joueur. */
+export interface Device {
+  ownerName: string;
+  date: { weekday: string; day: string; month: string };
+  weather: { city: string; temperature: string; condition: string };
+  event: { title: string; time: string };
+  apps: DeviceApp[];
+}
+
 export interface Case {
   id: Id;
   title: string;
@@ -183,6 +207,7 @@ export interface Case {
   /** Présentation de l'affaire (dossier). */
   intro: string[];
   playerName: string;
+  device: Device;
   /** Horloge narrative : heure de départ et heure limite (HH:MM). */
   clock: { start: string; perChoiceMinutes: number; max: string; deadlineLabel: string };
   suspects: Suspect[];

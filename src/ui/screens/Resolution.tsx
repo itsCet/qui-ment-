@@ -2,19 +2,20 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { computeScore } from '../../engine';
 import { useGame } from '../../state/store';
-import { Avatar } from '../components/Avatar';
 import { ConfirmDialog } from '../components/Dialog';
 import { Icon } from '../components/Icon';
 import { useCaseRoute } from '../hooks';
+import { ContactAvatar } from '../phone/ContactAvatar';
+import { NavBar } from '../phone/NavBar';
 
 export function Resolution() {
   const { c, progress } = useCaseRoute();
   const restartCase = useGame((s) => s.restartCase);
   const navigate = useNavigate();
   const [confirm, setConfirm] = useState(false);
-
   if (!c || !progress) return null;
-  if (!progress.solved) return <Navigate to={`/enquete/${c.id}/accusation`} replace />;
+  const base = `/enquete/${c.id}`;
+  if (!progress.solved) return <Navigate to={`${base}/accusation`} replace />;
 
   const { resolution } = c.solution;
   const culprit = c.suspects.find((s) => s.id === c.solution.culpritId);
@@ -22,75 +23,67 @@ export function Resolution() {
   const group = c.conversations.find((cv) => cv.kind === 'group');
 
   return (
-    <div className="screen">
-      <header className="screen-header">
-        <div>
-          <p className="eyebrow amber">Affaire résolue</p>
-          <h1>{c.title}</h1>
-        </div>
-      </header>
+    <div className="app-page grouped">
+      <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Affaire résolue" />
 
-      <section className="verdict">
-        {culprit && <Avatar suspect={culprit} size={72} />}
-        <div>
-          <p className="eyebrow">Coupable</p>
-          <p className="verdict-name">{culprit?.name}</p>
-        </div>
-      </section>
-      <p className="lead">{resolution.summary}</p>
-
-      <section className="panel score-card" aria-labelledby="score">
-        <h2 id="score">
-          Score : {score.total}/{score.max} · {score.rank}
-        </h2>
-        <table className="score-table">
-          <tbody>
-            {score.lines.map((l) => (
-              <tr key={l.label}>
-                <th scope="row">{l.label}</th>
-                <td>{l.points < 0 ? `−${Math.abs(l.points)}` : l.points}</td>
-              </tr>
-            ))}
-            <tr className="score-total">
-              <th scope="row">Total</th>
-              <td>{score.total}</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="small muted">
-          Le score part de {c.scoring.start}. Indices : −{c.scoring.hintCost.join(' / −')} selon le niveau. Mauvais suspect : −
-          {c.scoring.wrongSuspect}. Preuves insuffisantes : −{c.scoring.insufficientEvidence}. La vitesse de lecture et les
-          confrontations ratées ne comptent pas.
-        </p>
+      <section className="contact-hero verdict">
+        {culprit && <ContactAvatar suspect={culprit} size={88} />}
+        <p className="section-label">Coupable</p>
+        <h2>{culprit?.name}</h2>
+        <p>{resolution.summary}</p>
       </section>
 
-      <section className="panel" aria-labelledby="timeline">
-        <h2 id="timeline">Reconstitution</h2>
-        <ol className="timeline">
+      <section className="group-section">
+        <h2 className="section-label">Score</h2>
+        <div className="group-card">
+          <p className="score-big">
+            {score.total}
+            <span>/{score.max}</span>
+          </p>
+          <p className="score-rank">{score.rank}</p>
+          <table className="score-table">
+            <tbody>
+              {score.lines.map((l) => (
+                <tr key={l.label}>
+                  <th scope="row">{l.label}</th>
+                  <td>{l.points < 0 ? `−${Math.abs(l.points)}` : l.points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="small muted">
+            Indices : −{c.scoring.hintCost.join(' / −')} selon le niveau. Mauvais suspect : −{c.scoring.wrongSuspect}. Preuves
+            insuffisantes : −{c.scoring.insufficientEvidence}. La vitesse de lecture ne compte pas.
+          </p>
+        </div>
+      </section>
+
+      <section className="group-section">
+        <h2 className="section-label">Reconstitution</h2>
+        <ol className="grouped-list timeline">
           {resolution.timeline.map((t) => (
-            <li key={t.time + t.text} className={t.key ? 'key' : ''}>
+            <li key={t.time + t.text} className={`list-row static${t.key ? ' key' : ''}`}>
               <time>{t.time}</time>
-              <p>
-                {t.key && <span className="visually-hidden">Moment clé : </span>}
+              <span className="list-row-text">
+                {t.key && <span className="key-tag">Moment clé</span>}
                 {t.text}
-              </p>
+              </span>
             </li>
           ))}
         </ol>
       </section>
 
-      <section className="panel" aria-labelledby="decisive">
-        <h2 id="decisive">Les preuves décisives</h2>
-        <ul className="explain-list">
+      <section className="group-section">
+        <h2 className="section-label">Preuves décisives</h2>
+        <ul className="grouped-list">
           {resolution.decisive.map((d) => {
             const e = c.evidence.find((x) => x.id === d.evidenceId);
-            const had = progress.evidence.includes(d.evidenceId);
             return (
-              <li key={d.evidenceId}>
-                <p className="explain-title">
+              <li key={d.evidenceId} className="list-block">
+                <p className="list-row-title">
                   {e?.title}
-                  {had && (
-                    <span className="tag">
+                  {progress.evidence.includes(d.evidenceId) && (
+                    <span className="found-tag">
                       <Icon name="check" size={12} /> trouvée
                     </span>
                   )}
@@ -102,36 +95,38 @@ export function Resolution() {
         </ul>
       </section>
 
-      <section className="panel" aria-labelledby="false-leads">
-        <h2 id="false-leads">Les fausses pistes</h2>
-        <ul className="explain-list">
+      <section className="group-section">
+        <h2 className="section-label">Fausses pistes</h2>
+        <ul className="grouped-list">
           {resolution.falseLeads.map((f) => (
-            <li key={f.title}>
-              <p className="explain-title">{f.title}</p>
+            <li key={f.title} className="list-block">
+              <p className="list-row-title">{f.title}</p>
               <p>{f.text}</p>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="panel" aria-labelledby="epilogue">
-        <h2 id="epilogue">Épilogue</h2>
-        <p>{resolution.epilogue}</p>
-        {group && (
-          <Link to={`/enquete/${c.id}/conversations/${group.id}`} className="button button-ghost button-block">
-            <Icon name="chat" size={18} /> Lire les derniers messages du groupe
-          </Link>
-        )}
+      <section className="group-section">
+        <h2 className="section-label">Épilogue</h2>
+        <div className="group-card prose">
+          <p>{resolution.epilogue}</p>
+        </div>
       </section>
 
-      <div className="stack">
-        <button type="button" className="button button-primary button-block" onClick={() => setConfirm(true)}>
-          <Icon name="restart" size={18} /> Rejouer l’enquête
+      <section className="group-section stack">
+        {group && (
+          <Link to={`${base}/echanges/${group.id}`} className="button-wide">
+            Lire les derniers messages du groupe
+          </Link>
+        )}
+        <button type="button" className="button-wide button-primary" onClick={() => setConfirm(true)}>
+          Rejouer l’enquête
         </button>
-        <Link to="/" className="button button-ghost button-block">
-          Retour à l’accueil
+        <Link to="/" className="button-wide">
+          Retour au menu
         </Link>
-      </div>
+      </section>
 
       <ConfirmDialog
         open={confirm}
@@ -143,7 +138,7 @@ export function Resolution() {
         onConfirm={() => {
           setConfirm(false);
           restartCase(c.id);
-          navigate(`/enquete/${c.id}`);
+          navigate(base);
         }}
       />
     </div>

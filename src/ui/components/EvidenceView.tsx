@@ -131,7 +131,15 @@ export function EvidenceContent({ c, evidence }: { c: Case; evidence: Evidence }
 export function EvidenceDetail({ c, evidence }: { c: Case; evidence: Evidence }) {
   return (
     <div className="ev-detail">
-      <EvidenceContent c={c} evidence={evidence} />
+      {evidence.image && (
+        <figure className="ev-photo ev-real-photo">
+          <img src={evidence.image} alt={evidence.description} />
+          {evidence.content.type === 'photo' && <figcaption>{evidence.content.caption}</figcaption>}
+        </figure>
+      )}
+      {!(evidence.image && (evidence.content.type === 'photo' || evidence.content.type === 'object')) && (
+        <EvidenceContent c={c} evidence={evidence} />
+      )}
       <p>{evidence.description}</p>
       <p className="ev-source">
         <strong>Provenance :</strong> {evidence.source}

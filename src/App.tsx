@@ -1,27 +1,36 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import { useGame } from './state/store';
 import { Accusation } from './ui/screens/Accusation';
-import { CaseLayout } from './ui/screens/CaseLayout';
-import { ConversationView } from './ui/screens/ConversationView';
-import { Conversations } from './ui/screens/Conversations';
-import { Dossier } from './ui/screens/Dossier';
-import { EvidenceScreen } from './ui/screens/Evidence';
-import { Home } from './ui/screens/Home';
+import { CarnetApp } from './ui/screens/CarnetApp';
+import { ChatView } from './ui/screens/ChatView';
+import { ContactsApp, ContactSheet } from './ui/screens/ContactsApp';
+import { DeviceAppScreen } from './ui/screens/DeviceAppScreen';
+import { EnqueteApp } from './ui/screens/EnqueteApp';
+import { HomeScreen } from './ui/screens/HomeScreen';
+import { LockScreen } from './ui/screens/LockScreen';
+import { MessagesApp } from './ui/screens/MessagesApp';
+import { NotesApp } from './ui/screens/NotesApp';
+import { PhoneLayout } from './ui/screens/PhoneLayout';
+import { PhotosApp, PhotoViewer } from './ui/screens/PhotosApp';
 import { Resolution } from './ui/screens/Resolution';
-import { SuspectList, SuspectSheet } from './ui/screens/Suspects';
 
 const router = createBrowserRouter([
-  { path: '/', element: <Home /> },
+  { path: '/', element: <LockScreen /> },
   {
     path: '/enquete/:caseId',
-    element: <CaseLayout />,
+    element: <PhoneLayout />,
     children: [
-      { index: true, element: <Dossier /> },
-      { path: 'conversations', element: <Conversations /> },
-      { path: 'conversations/:conversationId', element: <ConversationView /> },
-      { path: 'suspects', element: <SuspectList /> },
-      { path: 'suspects/:suspectId', element: <SuspectSheet /> },
-      { path: 'preuves', element: <EvidenceScreen /> },
+      { index: true, element: <HomeScreen /> },
+      { path: 'echanges', element: <MessagesApp /> },
+      { path: 'echanges/:conversationId', element: <ChatView /> },
+      { path: 'photos', element: <PhotosApp /> },
+      { path: 'photos/:evidenceId', element: <PhotoViewer /> },
+      { path: 'notes', element: <NotesApp /> },
+      { path: 'app/:appId', element: <DeviceAppScreen /> },
+      { path: 'contacts', element: <ContactsApp /> },
+      { path: 'contacts/:suspectId', element: <ContactSheet /> },
+      { path: 'carnet', element: <CarnetApp /> },
+      { path: 'enquete', element: <EnqueteApp /> },
       { path: 'accusation', element: <Accusation /> },
       { path: 'resolution', element: <Resolution /> },
     ],
@@ -40,7 +49,7 @@ export function App() {
     );
   }
   return (
-    <div className="app-frame">
+    <div className="device-frame">
       <a className="skip-link" href="#contenu">
         Aller au contenu
       </a>
