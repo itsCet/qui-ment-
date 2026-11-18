@@ -1,5 +1,9 @@
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
-import { getNextMessage, getVisibleQuestions } from '../../engine';
+import { useState } from 'react';
+import { getNextMessage, getVisibleQuestions, type Evidence } from '../../engine';
+import { Dialog } from '../components/Dialog';
+import { EvidenceDetail } from '../components/EvidenceView';
+import { evidenceIcon } from '../evidenceMeta';
 import { useGame } from '../../state/store';
 import { Icon } from '../components/Icon';
 import { useCaseRoute } from '../hooks';
@@ -41,6 +45,7 @@ export function ContactsApp() {
 
 export function ContactSheet() {
   const { c, progress } = useCaseRoute();
+  const [detail, setDetail] = useState<Evidence | null>(null);
   const { suspectId = '' } = useParams();
   const choose = useGame((s) => s.choose);
   const navigate = useNavigate();
@@ -54,6 +59,10 @@ export function ContactSheet() {
   const statements = c.statements.filter((st) => st.suspectId === suspect.id && progress.statements.includes(st.id));
   const questions = getVisibleQuestions(c, progress, suspect.conversationId);
   const answering = !!getNextMessage(c, progress, suspect.conversationId);
+  const items = (suspect.items ?? [])
+    .filter((id) => progress.evidence.includes(id))
+    .map((id) => c.evidence.find((e) => e.id === id))
+    .filter((e): e is Evidence => !!e);
 
   return (
     <div className="app-page grouped">
@@ -104,6 +113,32 @@ export function ContactSheet() {
         </div>
       </section>
 
+      {items.length > 0 && (
+        <section className="group-section">
+          <h2 className="section-label">Effets présentés</h2>
+          <ul className="grouped-list">
+            {items.map((e) => (
+              <li key={e.id}>
+                <button type="button" className="list-row" onClick={() => setDetail(e)}>
+                  {e.image ? (
+                    <img className="thumb" src={e.image} alt="" loading="lazy" />
+                  ) : (
+                    <span className="thumb thumb-icon">
+                      <Icon name={evidenceIcon(e)} size={20} />
+                    </span>
+                  )}
+                  <span className="list-row-text">
+                    <span className="list-row-title">{e.title}</span>
+                    <span className="list-row-sub">{e.summary}</span>
+                  </span>
+                  <Icon name="chevron" size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="group-section">
         <h2 className="section-label">Questions à poser</h2>
         <div className="group-card">
@@ -139,6 +174,9 @@ export function ContactSheet() {
           )}
         </div>
       </section>
+      <Dialog open={!!detail} onClose={() => setDetail(null)} title={detail?.title ?? ''} variant="sheet">
+        {detail && <EvidenceDetail c={c} evidence={detail} />}
+      </Dialog>
     </div>
   );
 }

@@ -198,7 +198,9 @@ export function EvidenceDetail({ c, evidence }: { c: Case; evidence: Evidence })
       {!(evidence.image && (evidence.content.type === 'photo' || evidence.content.type === 'object')) && (
         <EvidenceContent c={c} evidence={evidence} />
       )}
-      <p>{evidence.description}</p>
+      <p className="ev-examine">
+        <strong>Examiner :</strong> {evidence.description}
+      </p>
       <p className="ev-source">
         <strong>Provenance :</strong> {evidence.source}
       </p>

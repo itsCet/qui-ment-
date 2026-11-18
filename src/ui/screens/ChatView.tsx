@@ -4,6 +4,7 @@ import {
   getAvailableChoices,
   getNextMessage,
   indexCase,
+  isResolved,
   parseClock,
   unreadCount,
   type Evidence,
@@ -73,8 +74,10 @@ export function ChatView() {
   const isGroup = conversation.kind === 'group';
   const typingAuthor =
     next && next.from !== 'player' && next.from !== 'system' ? c.suspects.find((s) => s.id === next.from) : undefined;
+  const inInquiry = conversation.section === 'enquete';
+  const backTo = inInquiry ? `${base}/enquete` : `${base}/echanges`;
   const otherUnread = c.conversations
-    .filter((cv) => cv.kind !== 'notes' && cv.id !== conversationId)
+    .filter((cv) => cv.kind !== 'notes' && cv.id !== conversationId && (cv.section === 'enquete') === inInquiry)
     .reduce((sum, cv) => sum + unreadCount(progress, cv.id), 0);
   const subtitle = conversation.archive
     ? `${conversation.archive.label} · lecture seule`
@@ -166,7 +169,7 @@ export function ChatView() {
   return (
     <div className="chat">
       <header className="chat-head">
-        <Link to={`${base}/echanges`} className="navbar-back chat-back" aria-label="Retour à Échanges">
+        <Link to={backTo} className="navbar-back chat-back" aria-label={inInquiry ? 'Retour à Enquête' : 'Retour à Échanges'}>
           <Icon name="back" size={24} />
           {otherUnread > 0 && <span className="back-count">{otherUnread}</span>}
         </Link>
@@ -226,7 +229,13 @@ export function ChatView() {
             ))}
           </div>
         ) : (
-          <p className="tray-empty">Rien à ajouter pour l’instant. De nouvelles questions viendront avec tes découvertes.</p>
+          isResolved(c, progress) ? (
+            <Link to={`${base}/resolution`} className="button-wide button-primary">
+              Affaire résolue — voir la résolution
+            </Link>
+          ) : (
+            <p className="tray-empty">Rien à ajouter pour l’instant. De nouvelles questions viendront avec tes découvertes.</p>
+          )
         )}
       </div>
 

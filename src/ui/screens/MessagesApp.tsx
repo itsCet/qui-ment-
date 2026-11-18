@@ -9,7 +9,9 @@ export function MessagesApp() {
   const { c, progress } = useCaseRoute();
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
-  const visible = c.conversations.filter((cv) => cv.kind !== 'notes' && progress.openConversations.includes(cv.id));
+  const visible = c.conversations.filter(
+    (cv) => cv.kind !== 'notes' && cv.section !== 'enquete' && progress.openConversations.includes(cv.id),
+  );
   const live = visible.filter((cv) => !cv.archive);
   const archives = visible.filter((cv) => cv.archive);
   const sections = archives.length
@@ -22,7 +24,7 @@ export function MessagesApp() {
   return (
     <div className="app-page">
       <NavBar back={{ to: base, label: 'Accueil' }} largeTitle="Échanges" />
-      {sections.map((section) => (
+      {sections.filter((section) => section.items.length > 0).map((section) => (
       <section key={section.title} aria-label={section.title || 'Conversations'}>
       {section.title && <h2 className="list-section-title">{section.title}</h2>}
       <ul className="msg-list">

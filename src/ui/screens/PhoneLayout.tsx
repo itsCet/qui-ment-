@@ -38,8 +38,8 @@ function useBanners(c: Case | undefined, progress: CaseProgress | undefined, act
       const author = c.suspects.find((s) => s.id === message.from)?.name.split(' ')[0] ?? '';
       added.push({
         id: ++counter.current,
-        app: 'echanges',
-        appName: 'Échanges',
+        app: cv.section === 'enquete' ? 'enquete' : 'echanges',
+        appName: cv.section === 'enquete' ? 'Enquête' : 'Échanges',
         title: cv.kind === 'group' ? cv.title : author,
         text: cv.kind === 'group' ? `${author} : ${message.text}` : message.text,
         to: `${base}/echanges/${cv.id}`,

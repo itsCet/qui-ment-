@@ -21,6 +21,7 @@ export function Accusation() {
   if (!c || !progress) return null;
   const base = `/enquete/${c.id}`;
   if (progress.solved && isResolved(c, progress)) return <Navigate to={`${base}/resolution`} replace />;
+  if (c.solution.noAccusation) return <Navigate to={`${base}/${isResolved(c, progress) ? 'resolution' : 'enquete'}`} replace />;
   const after = c.solution.afterAccusation;
   if (progress.solved && after) {
     return (

@@ -5,6 +5,7 @@ import { useGame } from '../../state/store';
 import { ConfirmDialog } from '../components/Dialog';
 import { Icon } from '../components/Icon';
 import { useCaseRoute } from '../hooks';
+import { scoringText } from '../scoreText';
 import { ContactAvatar } from '../phone/ContactAvatar';
 import { NavBar } from '../phone/NavBar';
 
@@ -28,7 +29,7 @@ export function Resolution() {
 
       <section className="contact-hero verdict">
         {culprit && <ContactAvatar suspect={culprit} size={88} />}
-        <p className="section-label">Coupable</p>
+        <p className="section-label">{c.solution.verdictLabel ?? 'Coupable'}</p>
         <h2>{culprit?.name}</h2>
         <p>{resolution.summary}</p>
       </section>
@@ -52,8 +53,7 @@ export function Resolution() {
             </tbody>
           </table>
           <p className="small muted">
-            Indices : −{c.scoring.hintCost.join(' / −')} selon le niveau. Mauvais suspect : −{c.scoring.wrongSuspect}. Preuves
-            insuffisantes : −{c.scoring.insufficientEvidence}. La vitesse de lecture ne compte pas.
+            {scoringText(c)}
           </p>
         </div>
       </section>

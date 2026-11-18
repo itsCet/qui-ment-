@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { computeScore, getCurrentObjective, hintCostUpTo, isObjectiveComplete, isResolved } from '../../engine';
+import { computeScore, getCurrentObjective, hintCostUpTo, isObjectiveComplete, isResolved, unreadCount } from '../../engine';
 import { useGame } from '../../state/store';
 import { Icon } from '../components/Icon';
 import { useCaseRoute } from '../hooks';
+import { ContactAvatar, ConversationAvatar } from '../phone/ContactAvatar';
 import { NavBar } from '../phone/NavBar';
+import { scoringText } from '../scoreText';
 
 /** Appli « Enquête » : dossier, objectif, indices, progression, score et accusation. */
 export function EnqueteApp() {
@@ -16,6 +18,8 @@ export function EnqueteApp() {
   const objective = getCurrentObjective(c, progress);
   const score = computeScore(c, progress);
   const level = objective ? (progress.hintsUsed[objective.id] ?? 0) : 0;
+  const inquiry = c.conversations.filter((cv) => cv.section === 'enquete' && progress.openConversations.includes(cv.id));
+  const files = c.suspects.filter((s) => !s.npc && s.items?.length);
 
   return (
     <div className="app-page grouped">
@@ -61,6 +65,54 @@ export function EnqueteApp() {
         </div>
       </section>
 
+      {inquiry.length > 0 && (
+        <section className="group-section">
+          <h2 className="section-label">Conversations et auditions</h2>
+          <ul className="grouped-list">
+            {inquiry.map((cv) => {
+              const unread = unreadCount(progress, cv.id);
+              return (
+                <li key={cv.id}>
+                  <Link to={`${base}/echanges/${cv.id}`} className="list-row">
+                    <ConversationAvatar c={c} conversation={cv} size={40} />
+                    <span className="list-row-text">
+                      <span className="list-row-title">{cv.title}</span>
+                      {cv.subtitle && <span className="list-row-sub">{cv.subtitle}</span>}
+                    </span>
+                    {unread > 0 && (
+                      <span className="badge-count" aria-label={`${unread} non lu${unread > 1 ? 's' : ''}`}>
+                        {unread}
+                      </span>
+                    )}
+                    <Icon name="chevron" size={16} />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      {files.length > 0 && (
+        <section className="group-section">
+          <h2 className="section-label">Fiches et effets présentés</h2>
+          <ul className="grouped-list">
+            {files.map((s) => (
+              <li key={s.id}>
+                <Link to={`${base}/contacts/${s.id}`} className="list-row">
+                  <ContactAvatar suspect={s} size={40} />
+                  <span className="list-row-text">
+                    <span className="list-row-title">{s.name}</span>
+                    <span className="list-row-sub">{s.role}</span>
+                  </span>
+                  <Icon name="chevron" size={16} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section className="group-section">
         <h2 className="section-label">L’affaire</h2>
         <div className="group-card prose">
@@ -97,7 +149,7 @@ export function EnqueteApp() {
         </ul>
       </section>
 
-      {!progress.solved && (
+      {!progress.solved && !c.solution.noAccusation && (
         <section className="group-section">
           <Link to={`${base}/accusation`} className="button-wide button-danger">
             {c.solution.prompt ?? 'Accuser quelqu’un'}
@@ -117,10 +169,7 @@ export function EnqueteApp() {
             {score.total}/{score.max}
           </p>
           <p className="small muted">
-            Tu pars de {c.scoring.start} points. Chaque indice coûte {c.scoring.hintCost.join(', ')} points selon son niveau.
-            Accuser le mauvais suspect coûte {c.scoring.wrongSuspect} points ; accuser la bonne personne sans preuves
-            suffisantes en coûte {c.scoring.insufficientEvidence}. Les confrontations ratées et le temps de lecture ne comptent
-            pas.
+            {scoringText(c)}
           </p>
         </div>
       </section>

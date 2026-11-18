@@ -52,6 +52,10 @@ export interface Suspect {
   conversationId: Id;
   /** Personnage secondaire (secours…) : absent des contacts et de l'accusation. */
   npc?: boolean;
+  /** Photo de profil locale (chemin public), à la place des initiales. */
+  avatar?: string;
+  /** Pièces « effets présentés » affichées sur la fiche du personnage. */
+  items?: Id[];
 }
 
 /** Expéditeur : un suspect, le joueur, ou une note système. */
@@ -101,6 +105,8 @@ export interface Conversation {
    * Les messages de `ownerId` y apparaissent comme envoyés par le propriétaire.
    */
   archive?: { ownerId: Id; label: string };
+  /** « enquete » : conversation de l'enquête en cours, rangée dans l'appli Enquête et non dans Échanges. */
+  section?: 'enquete';
   messages: Message[];
   choices: Choice[];
 }
@@ -183,6 +189,10 @@ export interface EvidenceRequirement {
 export interface Solution {
   /** Question posée sur l'écran d'accusation. */
   prompt?: string;
+  /** Pas d'écran d'accusation : la conclusion se joue en réponses dans une conversation. */
+  noAccusation?: boolean;
+  /** Libellé au-dessus du personnage central dans la résolution (« Coupable » par défaut). */
+  verdictLabel?: string;
   culpritId: Id;
   /** Condition de fin de l'enquête (par défaut : accusation correcte). */
   resolvedWhen?: Condition;

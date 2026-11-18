@@ -35,7 +35,10 @@ export function HomeScreen() {
   const base = `/enquete/${c.id}`;
   const notes = c.conversations.find((cv) => cv.kind === 'notes');
   const chatUnread = c.conversations
-    .filter((cv) => cv.kind !== 'notes')
+    .filter((cv) => cv.kind !== 'notes' && cv.section !== 'enquete')
+    .reduce((sum, cv) => sum + unreadCount(progress, cv.id), 0);
+  const inquiryUnread = c.conversations
+    .filter((cv) => cv.section === 'enquete')
     .reduce((sum, cv) => sum + unreadCount(progress, cv.id), 0);
   const notesUnread = notes ? unreadCount(progress, notes.id) : 0;
   const objective = getCurrentObjective(c, progress);
@@ -51,9 +54,10 @@ export function HomeScreen() {
     { id: 'contacts', label: 'Contacts', to: `${base}/contacts` },
     ...device.apps.map((a): HomeApp => ({ id: deviceIcon[a.icon], label: a.label, to: `${base}/app/${a.id}` })),
     { id: 'carnet', label: 'Carnet', to: `${base}/carnet` },
-    { id: 'enquete', label: 'Enquête', to: `${base}/enquete` },
+    { id: 'enquete', label: 'Enquête', to: `${base}/enquete`, badge: inquiryUnread },
   ];
-  const dock = apps.filter((a) => ['echanges', 'photos', 'notes', 'carnet'].includes(a.id));
+  const dockIds = inquiryUnread || c.conversations.some((cv) => cv.section === 'enquete') ? ['echanges', 'photos', 'notes', 'enquete'] : ['echanges', 'photos', 'notes', 'carnet'];
+  const dock = apps.filter((a) => dockIds.includes(a.id));
 
   return (
     <div className="home-screen">

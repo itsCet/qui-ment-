@@ -117,6 +117,7 @@ export function validateCase(c: Case): string[] {
   }
 
   for (const s of c.suspects) {
+    for (const id of s.items ?? []) if (!evidence.has(id)) problems.push(`Suspect ${s.id} : effet inconnu ${id}`);
     if (!conversations.has(s.conversationId)) problems.push(`Suspect ${s.id} : conversation inconnue ${s.conversationId}`);
   }
 
@@ -184,8 +185,9 @@ export function validateCase(c: Case): string[] {
   if (sol.afterAccusation && !conversations.has(sol.afterAccusation.conversationId))
     problems.push(`Solution : conversation inconnue ${sol.afterAccusation.conversationId}`);
   if (c.suspects.find((s) => s.id === sol.culpritId)?.npc) problems.push('Solution : le coupable ne peut pas être un figurant');
+  if (sol.noAccusation && !sol.resolvedWhen) problems.push('Solution : sans accusation, il faut une condition de fin');
   for (const s of c.suspects) {
-    if (s.npc) continue;
+    if (s.npc || sol.noAccusation) continue;
     if (s.id !== sol.culpritId && !sol.wrongSuspectFeedback[s.id])
       problems.push(`Solution : pas de retour pour l’accusation de ${s.id}`);
   }

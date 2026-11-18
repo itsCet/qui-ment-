@@ -1118,6 +1118,30 @@ button {
   line-height: 1;
 }
 
+.contact-photo {
+  display: block;
+  object-fit: cover;
+  background: var(--grouped);
+}
+
+.badge-count {
+  flex: none;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 22px;
+  text-align: center;
+}
+
+.ev-examine strong {
+  font-weight: 600;
+}
+
 .group-avatar {
   position: relative;
   flex: none;

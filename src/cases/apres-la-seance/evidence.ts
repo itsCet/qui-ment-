@@ -1,0 +1,316 @@
+import type { Evidence } from '../../engine/types';
+
+/** Images locales remplaçables : garder le même nom de fichier. */
+export const IMG = '/photos/rialto';
+const EXTRACTION = 'Extraction du téléphone de Lucas';
+
+export const evidence: Evidence[] = [
+  /* -------- Photos de contexte (extraction) -------- */
+  {
+    id: 'ev_facade',
+    title: 'Le Rialto',
+    summary: 'La façade du cinéma, fermé pour travaux',
+    description: 'La façade du Rialto, cinéma fermé pour travaux depuis l’automne. Lucas y était projectionniste.',
+    source: `${EXTRACTION} — photo prise par Lucas.`,
+    date: 'sam. 28 févr.',
+    time: '17:02',
+    image: `${IMG}/facade.webp`,
+    everyday: true,
+    content: { type: 'photo', visual: 'none', caption: 'Façade du Rialto' },
+  },
+  {
+    id: 'ev_lucas_cabine',
+    title: 'Lucas dans la cabine',
+    summary: 'Lucas au travail, dans la cabine de projection',
+    description: 'Lucas Morel dans la cabine de projection du Rialto, entre les projecteurs et les bobines.',
+    source: `${EXTRACTION} — photo de l’album « Rialto ».`,
+    date: 'lun. 2 mars',
+    time: '18:40',
+    image: `${IMG}/lucas-cabine.webp`,
+    everyday: true,
+    content: { type: 'photo', visual: 'none', caption: 'Lucas dans la cabine' },
+  },
+  {
+    id: 'ev_video_disque',
+    title: 'Vidéo de travail',
+    summary: '15:12 — le disque MASTER : coque rouge, étiquette blanche',
+    description:
+      'Image d’une courte vidéo de travail filmée par Lucas mardi après-midi. Sur la table de la cabine, près de son matériel, un disque dur dans une coque rouge, avec une étiquette blanche « MASTER ». Lucas commente : « Le master reste ici jusqu’à jeudi. »',
+    source: `${EXTRACTION} — vidéo filmée par Lucas.`,
+    date: 'mar. 3 mars',
+    time: '15:12',
+    image: `${IMG}/disque-rouge.webp`,
+    content: { type: 'photo', visual: 'none', caption: 'Vidéo de travail, 15:12 : disque rouge « MASTER » sur la table de la cabine' },
+  },
+
+  /* -------- Messages de l'extraction -------- */
+  {
+    id: 'ev_msg_menace',
+    title: 'Menace d’Adrien',
+    summary: '18 févr. — « je viens vous arrêter moi-même »',
+    description: 'Adrien écrit à Lucas deux semaines avant la projection.',
+    source: `${EXTRACTION} — conversation avec Adrien.`,
+    date: 'mer. 18 févr.',
+    time: '23:12',
+    content: {
+      type: 'quote',
+      author: 'adrien',
+      time: 'mer. 18 févr. · 23:12',
+      text: 'Votre film me fait dire le contraire de ce que j’ai dit. Si vous projetez ça, je viens vous arrêter moi-même.',
+    },
+  },
+  {
+    id: 'ev_msg_rdv_adrien',
+    title: 'Rendez-vous avec Adrien',
+    summary: 'Mar. 16:02 — Lucas l’invite au Rialto à 21 h',
+    description: 'Lucas invite Adrien au Rialto ; Adrien répond « J’y serai » à 16:30.',
+    source: `${EXTRACTION} — conversation avec Adrien.`,
+    date: 'mar. 3 mars',
+    time: '16:02',
+    content: {
+      type: 'quote',
+      author: 'lucas',
+      time: 'mar. 3 mars · 16:02',
+      text: 'J’ai retrouvé l’enregistrement complet de votre entretien. Je crois que vous aviez raison. Vous pouvez passer au Rialto ce soir vers 21 h ?',
+      context: 'Réponse d’Adrien à 16:30 : « J’y serai. Si c’est encore un piège, je le saurai. »',
+    },
+  },
+  {
+    id: 'ev_miroir_intact',
+    title: 'Le couloir à 21:05',
+    summary: 'Photo envoyée à Adrien : le miroir près de la cabine est intact',
+    description:
+      'Photo envoyée par Lucas à Adrien, qui l’attendait dans le hall, avec le message « La cabine, au fond du couloir. » Au fond, la porte de la cabine ; juste à côté, un petit miroir rond accroché au mur, intact, au-dessus d’une tablette vide.',
+    source: `${EXTRACTION} — photo envoyée par Lucas à Adrien.`,
+    date: 'mar. 3 mars',
+    time: '21:05',
+    image: `${IMG}/miroir-intact.webp`,
+    content: { type: 'photo', visual: 'none', caption: '21:05 — porte de la cabine ; à côté, le miroir est intact' },
+  },
+  {
+    id: 'ev_msg_raison',
+    title: '« Tu avais raison »',
+    summary: 'Mar. 21:18 — Lucas reconnaît que la séquence est trompeuse',
+    description:
+      'Pendant leur rendez-vous, Lucas écrit à Adrien qu’il avait raison. Adrien a photographié ce message à l’écran.',
+    source: `${EXTRACTION} — conversation avec Adrien.`,
+    date: 'mar. 3 mars',
+    time: '21:18',
+    content: {
+      type: 'quote',
+      author: 'lucas',
+      time: 'mar. 3 mars · 21:18',
+      text: 'Tu avais raison. Cette séquence est trompeuse. Je suspends la projection et on montre la version complète.',
+      context: 'Réponse d’Adrien à 21:19 : « Merci. Vraiment. »',
+    },
+  },
+  {
+    id: 'ev_msg_karim',
+    title: 'Réponse de Salomé',
+    summary: 'Mar. 14:32 — « quand Karim a soulevé ça »',
+    description: 'Lucas alerte Salomé sur le passage d’Adrien. Elle répond qu’un avertissement a déjà été donné la semaine précédente.',
+    source: `${EXTRACTION} — conversation avec Salomé.`,
+    date: 'mar. 3 mars',
+    time: '14:32',
+    content: {
+      type: 'quote',
+      author: 'salome',
+      time: 'mar. 3 mars · 14:32',
+      text: 'On en a déjà parlé la semaine dernière quand Karim a soulevé ça. C’est validé.',
+      context: 'Karim est l’ingénieur du son du film.',
+    },
+  },
+  {
+    id: 'ev_msg_nina_rdv',
+    title: 'Demande de rendez-vous à Nina',
+    summary: 'Mar. 21:30 — Lucas veut la voir ; elle répond « Pas ce soir »',
+    description: 'Lucas demande à Nina de venir parler de la coupe. Elle refuse à 21:32.',
+    source: `${EXTRACTION} — conversation avec Nina.`,
+    date: 'mar. 3 mars',
+    time: '21:30',
+    content: {
+      type: 'quote',
+      author: 'lucas',
+      time: 'mar. 3 mars · 21:30',
+      text: 'J’ai retrouvé le projet d’origine. On doit parler de la coupe avant que j’appelle Salomé.',
+      context: 'Réponse de Nina à 21:32 : « Pas ce soir. On voit ça demain. »',
+    },
+  },
+  {
+    id: 'ev_msg_disque',
+    title: '« Le disque reste ici »',
+    summary: 'Mar. 21:34 — Lucas refuse de confier le disque à Nina',
+    description: 'Nina demande à emporter le disque ; Lucas refuse par écrit.',
+    source: `${EXTRACTION} — conversation avec Nina.`,
+    date: 'mar. 3 mars',
+    time: '21:34',
+    content: {
+      type: 'quote',
+      author: 'lucas',
+      time: 'mar. 3 mars · 21:34',
+      text: 'Le disque reste ici. On regarde les fichiers ensemble. Je ne te le confie pas avant d’avoir parlé à Salomé.',
+      context: 'En réponse à Nina, 21:33 : « Tu peux me laisser le disque ? Je regarde les fichiers chez moi cette nuit. »',
+    },
+  },
+
+  /* -------- Effets présentés (fiches) -------- */
+  {
+    id: 'ev_effets_adrien',
+    title: 'Effets d’Adrien',
+    summary: 'Téléphone, clés de voiture, portefeuille',
+    description:
+      'Objets présentés par Adrien à son arrivée : téléphone, clés de voiture, portefeuille. Sur son téléphone, une photo prise mardi à 21:18 de l’écran de Lucas : « Tu avais raison. Cette séquence est trompeuse. »',
+    source: 'Relevé de l’équipe au début des auditions.',
+    date: 'mer. 4 mars',
+    content: { type: 'object', icon: 'plug', note: 'Téléphone, clés de voiture, portefeuille.' },
+  },
+  {
+    id: 'ev_effets_salome',
+    title: 'Effets de Salomé',
+    summary: 'Ordinateur portable, carnet de tournage, clés',
+    description: 'Objets présentés par Salomé : ordinateur portable, carnet de tournage, clés de voiture et de l’appartement.',
+    source: 'Relevé de l’équipe au début des auditions.',
+    date: 'mer. 4 mars',
+    content: { type: 'object', icon: 'plug', note: 'Ordinateur portable, carnet de tournage, clés.' },
+  },
+  {
+    id: 'ev_sac_nina',
+    title: 'Sac de Nina',
+    summary: 'Ordinateur, câbles, carnet, un disque dur rouge',
+    description:
+      'Sac de travail présenté par Nina, ouvert : un ordinateur portable, des câbles, un carnet, une gourde, et un disque dur dans une coque rouge avec une étiquette blanche « MASTER ». Des effets ordinaires pour une monteuse.',
+    source: 'Relevé de l’équipe au début des auditions.',
+    date: 'mer. 4 mars',
+    image: `${IMG}/sac-nina.webp`,
+    content: { type: 'photo', visual: 'none', caption: 'Sac de Nina : ordinateur, câbles, carnet, disque rouge « MASTER »' },
+  },
+
+  /* -------- Pièces apportées par l'enquête -------- */
+  {
+    id: 'ev_telephone',
+    title: 'Téléphone de Lucas',
+    summary: 'Retrouvé sous un fauteuil du rang F',
+    description:
+      'Le téléphone de Lucas, jaune avec une bande noire, tel qu’il a été retrouvé sous un fauteuil du rang F de la salle, écran vers le sol.',
+    source: 'Constatations, envoyées par Inès.',
+    date: 'mar. 3 mars',
+    time: '23:40',
+    image: `${IMG}/telephone-jaune.webp`,
+    content: { type: 'photo', visual: 'none', caption: 'Téléphone jaune à bande noire, sous un fauteuil du rang F' },
+  },
+  {
+    id: 'ev_comparaison',
+    title: 'Séquence montée / enregistrement complet',
+    summary: 'La phrase d’Adrien, coupée, change de sens',
+    description:
+      'Deux extraits isolés par l’informatique dans les fichiers de Lucas : la séquence telle qu’elle figure dans le film, et le passage correspondant de l’enregistrement complet de l’entretien.',
+    source: 'Fichiers du téléphone de Lucas, isolés par l’équipe informatique.',
+    date: 'mar. 3 mars',
+    content: {
+      type: 'document',
+      format: 'Transcription',
+      reference: 'Séquence 14',
+      author: 'Équipe informatique',
+      sections: [
+        { heading: 'Dans le film', text: 'Adrien : « Oui, j’ai demandé de continuer malgré l’alarme. »' },
+        {
+          heading: 'Enregistrement complet',
+          text: 'Adrien : « Vous me demandez si j’ai dit : “Oui, j’ai demandé de continuer malgré l’alarme.” Non. J’ai demandé d’arrêter. C’est justement ce que je vous explique. »',
+        },
+        { heading: 'Constat', text: 'Le montage ne garde que la citation : une phrase contestée devient un aveu.' },
+      ],
+    },
+  },
+  {
+    id: 'ev_historique_montage',
+    title: 'Historique du projet',
+    summary: 'Séquence 14 : montage initial de Nina, validé par Salomé',
+    description: 'Historique des versions de la séquence 14, transmis par Salomé.',
+    source: 'Envoyé par Salomé pendant son audition.',
+    date: 'mer. 4 mars',
+    content: {
+      type: 'document',
+      format: 'Historique',
+      reference: 'Projet « Après l’alarme »',
+      sections: [
+        { heading: '12 février', text: 'Séquence 14, montage initial : N. Roche.' },
+        { heading: '14 février', text: 'Validation : S. Bertin.' },
+        { heading: '24 février', text: 'Note de K. Diallo (son) : « Vérifier la phrase d’Adrien dans les rushes. » Statut : non traitée.' },
+      ],
+      footer: 'Un nom dans l’historique indique qui a monté une version, pas pourquoi.',
+    },
+  },
+  {
+    id: 'ev_programmation',
+    title: 'Fiche : message de 22:05',
+    summary: 'Rédigé et programmé à 21:25, envoi automatique à 22:05',
+    description: 'Analyse de l’extraction par l’équipe informatique. La messagerie du téléphone permet de programmer un envoi.',
+    source: 'Équipe informatique, à la demande d’Inès.',
+    date: 'mer. 4 mars',
+    content: {
+      type: 'document',
+      format: 'Analyse',
+      reference: 'Message « J’ai pris le dernier bus »',
+      author: 'Équipe informatique',
+      sections: [
+        { heading: 'Rédaction et programmation', text: '21:25' },
+        { heading: 'Envoi automatique', text: '22:05' },
+        { heading: 'Intervention à l’heure d’envoi', text: 'Aucune intervention manuelle nécessaire.' },
+      ],
+    },
+  },
+  {
+    id: 'ev_miroir_casse',
+    title: 'Le miroir, constatation',
+    summary: 'Le même miroir, brisé ; des fragments au sol',
+    description:
+      'Photo de constatation : le miroir près de la porte de la cabine est brisé, des fragments sont au sol sous la tablette. Sur la tablette, un trousseau de clés du Rialto.',
+    source: 'Constatations de la cabine, envoyées par Inès.',
+    date: 'mar. 3 mars',
+    time: '23:50',
+    image: `${IMG}/miroir-casse.webp`,
+    content: { type: 'photo', visual: 'none', caption: 'Constatation : miroir brisé, fragments au sol, clés sur la tablette' },
+  },
+  {
+    id: 'ev_inventaire',
+    title: 'Inventaire et numéro de série',
+    summary: 'Le disque du sac de Nina est le MASTER de Lucas',
+    description: 'Vérification demandée par l’enquêteur : numéro de série du disque du sac de Nina comparé à l’inventaire de matériel de Lucas.',
+    source: 'Vérification d’Inès.',
+    date: 'mer. 4 mars',
+    content: {
+      type: 'document',
+      format: 'Vérification',
+      author: 'Inès Garnier',
+      sections: [
+        { heading: 'Disque du sac de Nina', text: 'Numéro de série WX-4471.' },
+        { heading: 'Inventaire de Lucas', text: 'Disque « MASTER », coque rouge : WX-4471.' },
+        { heading: 'Conclusion', text: 'C’est le disque de Lucas.' },
+      ],
+    },
+  },
+  {
+    id: 'ev_brouillon',
+    title: 'Brouillon de Lucas',
+    summary: 'Un message jamais envoyé, pour Adrien',
+    description: 'Brouillon retrouvé dans le téléphone de Lucas, adressé à Adrien, jamais envoyé.',
+    source: 'Extraction, transmis par Inès à la fin de l’enquête.',
+    date: 'mar. 3 mars',
+    everyday: true,
+    content: {
+      type: 'quote',
+      author: 'lucas',
+      time: 'brouillon',
+      text: 'Je ne peux pas annuler ce que vous avez déjà subi. Mais demain, on montre la version complète.',
+    },
+  },
+];
+
+export const initialEvidence = [
+  'ev_facade',
+  'ev_lucas_cabine',
+  'ev_video_disque',
+  'ev_effets_adrien',
+  'ev_effets_salome',
+  'ev_sac_nina',
+];

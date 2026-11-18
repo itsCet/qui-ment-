@@ -2,6 +2,18 @@ import type { Case, Conversation, Suspect } from '../../engine/types';
 
 /** Avatar de contact sans photo : dégradé neutre et initiales, comme un vrai répertoire. */
 export function ContactAvatar({ suspect, size = 40 }: { suspect: Suspect; size?: number }) {
+  if (suspect.avatar) {
+    return (
+      <img
+        className="contact-avatar contact-photo"
+        src={suspect.avatar}
+        alt=""
+        width={size}
+        height={size}
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <span
       className="contact-avatar"
